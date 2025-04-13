@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace InventoryManagement.V0.Migrations
+namespace InventoryManagement.DAL.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

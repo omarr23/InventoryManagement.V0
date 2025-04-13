@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace InventoryManagement.DAL.Models;
+
 public class User
 {
     [Key]
@@ -17,7 +19,7 @@ public class User
 
     [ForeignKey("Company")]
     public int? CompanyId { get; set; }
-    public Company? Company { get; set; }
+    public virtual Company? Company { get; set; }  // Added virtual for EF navigation
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
