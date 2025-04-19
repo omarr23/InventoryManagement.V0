@@ -30,13 +30,13 @@ public class UserController : ControllerBase
     public IActionResult Create(User user)
     {
         _userService.CreateUser(user);
-        return CreatedAtAction(nameof(GetById), new { id = user.UserId }, user);
+        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, User user)
     {
-        if (id != user.UserId) return BadRequest();
+        if (id != user.Id) return BadRequest();
         _userService.UpdateUser(user);
         return NoContent();
     }

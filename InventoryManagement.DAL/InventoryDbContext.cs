@@ -1,14 +1,17 @@
 using InventoryManagement.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
 
 namespace InventoryManagement.DAL;
 
-public class InventoryDbContext : DbContext
+public class InventoryDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public InventoryDbContext(DbContextOptions<InventoryDbContext> options) : base(options) { }
 
     // DbSets for all your entities
-   public DbSet<User> Users { get; set; }
+  // public DbSet<User> Users { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Inventory> Inventories { get; set; }
     public DbSet<Product> Products { get; set; }
@@ -21,7 +24,10 @@ public class InventoryDbContext : DbContext
     //  Fluent API / relationships / constraints
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-          modelBuilder.Entity<InventoryProduct>()
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<IdentityUserLogin<int>>()
+        .HasKey(userLogin => userLogin.UserId);
+        modelBuilder.Entity<InventoryProduct>()
             .HasKey(ip => new { ip.InventoryId, ip.ProductId });
 
         modelBuilder.Entity<SupplierProduct>()
