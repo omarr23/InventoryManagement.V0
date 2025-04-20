@@ -1,6 +1,6 @@
 using InventoryManagement.BLL.Interfaces;
 using InventoryManagement.DAL.Models;
-using InventoryManagement.BLL.DTO; // <- wherever UserDto is defined
+using InventoryManagement.BLL.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.API.Controllers;
