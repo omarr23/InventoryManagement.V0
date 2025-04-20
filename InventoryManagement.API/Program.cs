@@ -2,30 +2,58 @@ using InventoryManagement.BLL.Interfaces;
 using InventoryManagement.BLL.Services;
 using InventoryManagement.DAL;
 using InventoryManagement.DAL.Interfaces;
+using InventoryManagement.DAL.Models;
 using InventoryManagement.DAL.Repositories;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using InventoryManagement.API.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
-builder.Services.AddControllers(); // Enables API controllers
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Register DbContext with SQL Server
+// =============================================
+// 📦 1. Database & Identity Configuration
+// =============================================
 builder.Services.AddDbContext<InventoryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//  Register Repositories and Services
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<InventoryDbContext>()
+    .AddDefaultTokenProviders();
+
+// =============================================
+// 🔐 2. Authentication & Authorization
+// =============================================
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
+// =============================================
+// 🛠️ 3. App Services & Repositories
+// =============================================
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// =============================================
+// 🌐 4. MVC + Swagger
+// =============================================
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-//  Middleware
+// =============================================
+// 🧪 5. Seed Roles on Startup
+// =============================================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await RoleSeeder.SeedRolesAsync(services);
+}
+
+// =============================================
+// 🚦 6. Middleware Pipeline
+// =============================================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -33,9 +61,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers(); // Enable attribute-based routing via controllers
-
+app.MapControllers();
 app.Run();

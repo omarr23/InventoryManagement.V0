@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using InventoryManagement.BLL.Interfaces;
 using InventoryManagement.DAL.Interfaces;
 using InventoryManagement.DAL.Models;
-using Microsoft.AspNetCore.Identity;
 using InventoryManagement.BLL.DTO;
 
 namespace InventoryManagement.BLL.Services
@@ -12,7 +11,6 @@ namespace InventoryManagement.BLL.Services
     public class UserService : IUserService
     {
         private readonly IGenericRepository<User> _repository;
-        private readonly PasswordHasher<User> _passwordHasher = new();
 
         public UserService(IGenericRepository<User> repository)
         {
@@ -36,10 +34,9 @@ namespace InventoryManagement.BLL.Services
             var user = new User
             {
                 Username = userDto.Username,
-                Role = userDto.Role
+                Role = userDto.Role,
+                PasswordHash = userDto.Password // optionally leave empty or ignore this field
             };
-
-            user.PasswordHash = _passwordHasher.HashPassword(user, userDto.Password);
 
             await _repository.AddAsync(user);
             await _repository.SaveChangesAsync();
@@ -52,7 +49,11 @@ namespace InventoryManagement.BLL.Services
             {
                 user.Username = userDto.Username;
                 user.Role = userDto.Role;
-                user.PasswordHash = _passwordHasher.HashPassword(user, userDto.Password);
+
+                if (!string.IsNullOrWhiteSpace(userDto.Password))
+                {
+                    user.PasswordHash = userDto.Password;
+                }
 
                 _repository.Update(user);
                 await _repository.SaveChangesAsync();
@@ -69,14 +70,13 @@ namespace InventoryManagement.BLL.Services
             }
         }
 
-        // Manual mapping
         private static UserDto MapToDto(User user)
         {
             return new UserDto
             {
                 Username = user.Username,
                 Role = user.Role,
-                Password = string.Empty // Never expose the hashed password
+                Password = string.Empty
             };
         }
     }
