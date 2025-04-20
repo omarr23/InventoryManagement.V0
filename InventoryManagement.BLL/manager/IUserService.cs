@@ -1,13 +1,15 @@
-using InventoryManagement.DAL.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using InventoryManagement.BLL.DTO;
 
-namespace InventoryManagement.BLL.Interfaces;
-
-public interface IUserService
+namespace InventoryManagement.BLL.Interfaces
 {
-    IEnumerable<User> GetAllUsers();
-    User? GetUserById(int id);
-    void CreateUser(User user);
-    void UpdateUser(User user);
-    void DeleteUser(int id);
+    public interface IUserService
+    {
+        Task<IEnumerable<UserDto>> GetAllUsersAsync();
+        Task<UserDto?> GetUserByIdAsync(int id);
+        Task CreateUserAsync(UserDto userDto);
+        Task UpdateUserAsync(int id, UserDto userDto);
+        Task DeleteUserAsync(int id);
+    }
 }

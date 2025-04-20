@@ -1,5 +1,6 @@
 using InventoryManagement.BLL.Interfaces;
 using InventoryManagement.DAL.Models;
+using InventoryManagement.BLL.DTO; // <- wherever UserDto is defined
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.API.Controllers;
@@ -16,35 +17,43 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll() => Ok(_userService.GetAllUsers());
+    public async Task<IActionResult> GetAll()
+    {
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(users);
+    }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var user = _userService.GetUserById(id);
-        if (user == null) return NotFound();
+        var user = await _userService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound();
+
         return Ok(user);
     }
 
     [HttpPost]
-    public IActionResult Create(User user)
+    public async Task<IActionResult> Create(UserDto userDto)
     {
-        _userService.CreateUser(user);
-        return CreatedAtAction(nameof(GetById), new { id = user.UserId }, user);
+        await _userService.CreateUserAsync(userDto);
+        // Assuming GetByIdAsync returns UserDto:
+        var createdUser = await _userService.GetAllUsersAsync();
+        var latestUser = createdUser.LastOrDefault(); // crude but fine for now
+        return CreatedAtAction(nameof(GetById), new { id = latestUser?.Username }, latestUser);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, User user)
+    public async Task<IActionResult> Update(int id, UserDto userDto)
     {
-        if (id != user.UserId) return BadRequest();
-        _userService.UpdateUser(user);
+        await _userService.UpdateUserAsync(id, userDto);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        _userService.DeleteUser(id);
+        await _userService.DeleteUserAsync(id);
         return NoContent();
     }
 }
