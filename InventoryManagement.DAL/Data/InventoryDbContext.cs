@@ -22,22 +22,43 @@ public class InventoryDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<SupplierProduct> SupplierProducts { get; set; }
     public DbSet<Payment> Payments { get; set; }
-    
+
     /// <summary>
     /// Configure entity relationships, constraints, and seed data.
     /// Also required to call base.OnModelCreating for Identity support.
     /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
+    {
     base.OnModelCreating(modelBuilder);
 
     // Composite Keys (keep this)
     modelBuilder.Entity<InventoryProduct>()
-        .HasKey(ip => new { ip.InventoryId, ip.ProductId });
-    
-    modelBuilder.Entity<SupplierProduct>()
-        .HasKey(sp => new { sp.SupplierId, sp.ProductId });
+      .HasKey(ip => new { ip.InventoryId, ip.ProductId });
 
-    // ❌ Remove all role seeding code here
-}
+    modelBuilder.Entity<InventoryProduct>()
+            .HasOne(ip => ip.Inventory)
+            .WithMany(i => i.InventoryProducts)
+            .HasForeignKey(ip => ip.InventoryId);
+
+    modelBuilder.Entity<InventoryProduct>()
+            .HasOne(ip => ip.Product)
+            .WithMany(p => p.InventoryProducts)
+            .HasForeignKey(ip => ip.ProductId);
+
+    modelBuilder.Entity<SupplierProduct>()
+      .HasKey(sp => new { sp.SupplierId, sp.ProductId });
+        modelBuilder.Entity<SupplierProduct>()
+            .HasOne(sp => sp.Supplier)
+            .WithMany(s => s.SupplierProducts)
+            .HasForeignKey(sp => sp.SupplierId);
+
+        modelBuilder.Entity<SupplierProduct>()
+            .HasOne(sp => sp.Product)
+            .WithMany(p => p.SupplierProducts)
+            .HasForeignKey(sp => sp.ProductId);
+
+        // ❌ Remove all role seeding code here
+    }
+  
+
 }
