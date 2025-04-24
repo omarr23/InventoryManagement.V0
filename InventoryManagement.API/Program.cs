@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using InventoryManagement.DAL.Repository.UserRepository;
 using InventoryManagement.BLL.manager.user;
 using InventoryManagement.BLL.manager.auth;
+using InventoryManagement.DAL.Repository.CompanyRepository;
+using InventoryManagement.BLL.manager.company;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +83,9 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+
 
 // =============================================
 //  4. MVC + Swagger + JWT Support
