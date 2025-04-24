@@ -14,7 +14,7 @@ public class InventoryDbContext : IdentityDbContext<ApplicationUser>
     public InventoryDbContext(DbContextOptions<InventoryDbContext> options) : base(options) { }
     
     // 👤 Domain-specific tables
-    public DbSet<User> Users { get; set; }
+  
     public DbSet<Company> Companies { get; set; }
     public DbSet<Inventory> Inventories { get; set; }
     public DbSet<Product> Products { get; set; }
@@ -28,29 +28,16 @@ public class InventoryDbContext : IdentityDbContext<ApplicationUser>
     /// Also required to call base.OnModelCreating for Identity support.
     /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder); // 🔑 Required for Identity tables
-        
-        // Composite keys
-        modelBuilder.Entity<InventoryProduct>()
-            .HasKey(ip => new { ip.InventoryId, ip.ProductId });
-        
-        modelBuilder.Entity<SupplierProduct>()
-            .HasKey(sp => new { sp.SupplierId, sp.ProductId });
-        
-        // Seed Identity Roles
-        string[] roleNames = { "ADMIN", "USER", "MANAGER" };
-        foreach (var roleName in roleNames)
-        {
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = roleName,
-                NormalizedName = roleName.ToUpper(),
-                ConcurrencyStamp = Guid.NewGuid().ToString()
-            });
-        }
-        
-        // Additional entity configurations can go here
-    }
+{
+    base.OnModelCreating(modelBuilder);
+
+    // Composite Keys (keep this)
+    modelBuilder.Entity<InventoryProduct>()
+        .HasKey(ip => new { ip.InventoryId, ip.ProductId });
+    
+    modelBuilder.Entity<SupplierProduct>()
+        .HasKey(sp => new { sp.SupplierId, sp.ProductId });
+
+    // ❌ Remove all role seeding code here
+}
 }

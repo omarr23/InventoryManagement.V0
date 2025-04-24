@@ -94,6 +94,9 @@ namespace InventoryManagement.DAL.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -140,6 +143,8 @@ namespace InventoryManagement.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -149,42 +154,6 @@ namespace InventoryManagement.DAL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("InventoryManagement.DAL.Models.User", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("CompanyId");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("InventoryProduct", b =>
@@ -236,29 +205,6 @@ namespace InventoryManagement.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "2a232611-66ef-46d8-bedb-d25f03d34e55",
-                            ConcurrencyStamp = "c785fce2-fa51-48ea-8aa9-cf5cd7d19d93",
-                            Name = "ADMIN",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "e4cfd596-334a-4f00-811c-7b2a188306e5",
-                            ConcurrencyStamp = "390e51b5-64b2-483f-940c-b3d360840d3b",
-                            Name = "USER",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "9af5afac-cc72-4216-be76-c2b550595a7f",
-                            ConcurrencyStamp = "312adb3a-6281-469c-852e-597d97576d6e",
-                            Name = "MANAGER",
-                            NormalizedName = "MANAGER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -494,7 +440,7 @@ namespace InventoryManagement.DAL.Migrations
                     b.ToTable("SupplierProducts");
                 });
 
-            modelBuilder.Entity("InventoryManagement.DAL.Models.User", b =>
+            modelBuilder.Entity("InventoryManagement.DAL.Models.ApplicationUser", b =>
                 {
                     b.HasOne("Company", "Company")
                         .WithMany("Users")

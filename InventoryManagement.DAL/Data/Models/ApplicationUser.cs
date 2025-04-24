@@ -9,5 +9,7 @@ namespace InventoryManagement.DAL.Models
 {
     public class ApplicationUser : IdentityUser
     {
+          public int? CompanyId { get; set; }
+        public virtual Company? Company { get; set; }
     }
 }

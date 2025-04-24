@@ -66,12 +66,13 @@ public class AuthService : IAuthService
 
     private string GenerateJwtToken(ApplicationUser user)
     {
-        var claims = new List<Claim>
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.Email ?? ""),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+       var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.NameIdentifier, user.Id), // 🔑 This is what .User.FindFirst(...) uses
+    new Claim(ClaimTypes.Name, user.UserName ?? ""),
+    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+};
+
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
