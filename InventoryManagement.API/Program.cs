@@ -16,6 +16,7 @@ using InventoryManagement.BLL.manager.user;
 using InventoryManagement.BLL.manager.auth;
 using InventoryManagement.DAL.Repository.CompanyRepository;
 using InventoryManagement.BLL.manager.company;
+using InventoryManagement.BLL.manager.services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +81,7 @@ builder.Services.AddAuthorization();
 //  3. App Services & Repositories
 // =============================================
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
