@@ -1,14 +1,20 @@
-using InventoryManagement.DAL.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using InventoryManagement.DAL.Models;
 
 namespace InventoryManagement.DAL;
 
-public class InventoryDbContext : DbContext
+/// <summary>
+/// The main application DbContext that includes both Identity tables and custom domain entities.
+/// Inherits from IdentityDbContext to enable ASP.NET Core Identity support.
+/// </summary>
+public class InventoryDbContext : IdentityDbContext<ApplicationUser>
 {
     public InventoryDbContext(DbContextOptions<InventoryDbContext> options) : base(options) { }
-
-    // DbSets for all your entities
-   public DbSet<User> Users { get; set; }
+    
+    // 👤 Domain-specific tables
+  
     public DbSet<Company> Companies { get; set; }
     public DbSet<Inventory> Inventories { get; set; }
     public DbSet<Product> Products { get; set; }
@@ -16,27 +22,22 @@ public class InventoryDbContext : DbContext
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<SupplierProduct> SupplierProducts { get; set; }
     public DbSet<Payment> Payments { get; set; }
-
-
-    //  Fluent API / relationships / constraints
+    
+    /// <summary>
+    /// Configure entity relationships, constraints, and seed data.
+    /// Also required to call base.OnModelCreating for Identity support.
+    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-          modelBuilder.Entity<InventoryProduct>()
-            .HasKey(ip => new { ip.InventoryId, ip.ProductId });
+{
+    base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<SupplierProduct>()
-            .HasKey(sp => new { sp.SupplierId, sp.ProductId });
+    // Composite Keys (keep this)
+    modelBuilder.Entity<InventoryProduct>()
+        .HasKey(ip => new { ip.InventoryId, ip.ProductId });
+    
+    modelBuilder.Entity<SupplierProduct>()
+        .HasKey(sp => new { sp.SupplierId, sp.ProductId });
 
-        // Example: Configure User.Email to be required and unique
-        // modelBuilder.Entity<User>()
-        //     .HasIndex(u => u.Email)
-        //     .IsUnique();
-
-        // modelBuilder.Entity<User>()
-        //     .Property(u => u.Email)
-        //     .IsRequired();
-
-        // Seed data   here
-        // modelBuilder.Entity<User>().HasData(new User { Id = 1, Username = "admin", Email = "admin@example.com", PasswordHash = "..." });
-    }
+    // ❌ Remove all role seeding code here
+}
 }
