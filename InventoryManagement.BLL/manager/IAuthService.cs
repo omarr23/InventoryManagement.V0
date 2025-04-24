@@ -1,7 +1,7 @@
 using InventoryManagement.BLL.DTO.authDTO;
 using Microsoft.AspNetCore.Identity;
 
-namespace InventoryManagement.BLL.Interfaces
+namespace InventoryManagement.BLL.manager
 {
     public interface IAuthService
     {

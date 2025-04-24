@@ -1,5 +1,5 @@
 using InventoryManagement.BLL.DTO.authDTO;
-using InventoryManagement.BLL.Interfaces;
+using InventoryManagement.BLL.manager;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.API.Controllers;

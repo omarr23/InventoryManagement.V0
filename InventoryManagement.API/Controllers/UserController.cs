@@ -1,4 +1,4 @@
-using InventoryManagement.BLL.Interfaces;
+using InventoryManagement.BLL.manager;
 using InventoryManagement.DAL.Models;
 using InventoryManagement.BLL.DTO;
 using Microsoft.AspNetCore.Mvc;

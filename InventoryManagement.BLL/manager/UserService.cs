@@ -2,20 +2,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InventoryManagement.BLL.DTO;
-using InventoryManagement.BLL.Interfaces;
+using InventoryManagement.BLL.manager;
 using InventoryManagement.DAL.Models;
 using Microsoft.AspNetCore.Identity;
+using InventoryManagement.DAL.Repository.UserRepository;
 
-namespace InventoryManagement.BLL.Services
+namespace InventoryManagement.BLL.manager
 {
     public class UserService : IUserService
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
+{
+    private readonly IUserRepository _userRepository;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserService(UserManager<ApplicationUser> userManager)
-        {
-            _userManager = userManager;
-        }
+    public UserService(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
+    {
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+    }
+
+    // your methods...
+
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
 {
@@ -37,19 +43,21 @@ namespace InventoryManagement.BLL.Services
 }
 
 
-        public async Task<UserDto?> GetUserByIdAsync(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return null;
+     public async Task<UserDto?> GetUserByIdAsync(string id)
+{
+    var user = await _userRepository.FindByIdAsync(id); // ✅ Using repository here
+    if (user == null) return null;
 
-            var roles = await _userManager.GetRolesAsync(user);
-            return new UserDto
-            {
-                Username = user.UserName,
-                Role = roles.FirstOrDefault() ?? "USER",
-                
-            };
-        }
+    var roles = await _userManager.GetRolesAsync(user); // still using UserManager here
+
+    return new UserDto
+    {
+        UserId = user.Id,
+        Username = user.UserName,
+        Role = roles.FirstOrDefault() ?? "USER"
+    };
+}
+
 
 public async Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto)
 {

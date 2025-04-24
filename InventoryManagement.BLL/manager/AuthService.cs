@@ -1,5 +1,5 @@
 using InventoryManagement.BLL.DTO.authDTO;
-using InventoryManagement.BLL.Interfaces;
+using InventoryManagement.BLL.manager;
 using InventoryManagement.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace InventoryManagement.BLL.Services;
+namespace InventoryManagement.BLL.manager;
 
 public class AuthService : IAuthService
 {

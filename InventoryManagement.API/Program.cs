@@ -1,5 +1,5 @@
-using InventoryManagement.BLL.Interfaces;
-using InventoryManagement.BLL.Services;
+using InventoryManagement.BLL.manager;
+using InventoryManagement.BLL.manager;
 using InventoryManagement.DAL;
 using InventoryManagement.DAL.Interfaces;
 using InventoryManagement.DAL.Models;
@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Threading.Tasks;
+using InventoryManagement.DAL.Repository.UserRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +79,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // =============================================
 //  4. MVC + Swagger + JWT Support
