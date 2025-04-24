@@ -7,7 +7,7 @@ using InventoryManagement.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using InventoryManagement.DAL.Repository.UserRepository;
 
-namespace InventoryManagement.BLL.manager
+namespace InventoryManagement.BLL.manager.user
 {
     public class UserService : IUserService
 {

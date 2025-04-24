@@ -12,6 +12,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Threading.Tasks;
 using InventoryManagement.DAL.Repository.UserRepository;
+using InventoryManagement.BLL.manager.user;
+using InventoryManagement.BLL.manager.auth;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -8,7 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace InventoryManagement.BLL.manager;
+namespace InventoryManagement.BLL.manager.auth;
 
 public class AuthService : IAuthService
 {

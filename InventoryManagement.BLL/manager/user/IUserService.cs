@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using InventoryManagement.BLL.DTO;
 
-namespace InventoryManagement.BLL.manager
+namespace InventoryManagement.BLL.manager.user
 {
  public interface IUserService
 {
