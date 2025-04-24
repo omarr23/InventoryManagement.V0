@@ -1,5 +1,4 @@
 using InventoryManagement.BLL.manager;
-using InventoryManagement.BLL.manager;
 using InventoryManagement.DAL;
 using InventoryManagement.DAL.Interfaces;
 using InventoryManagement.DAL.Models;
