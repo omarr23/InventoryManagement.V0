@@ -1,15 +1,17 @@
-﻿using InventoryManagement.BLL.manager.services;
+﻿using InventoryManagement.BLL.manager.ProductService;
+using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.API.Controllers
 {
+    // ProductController.cs
     [ApiController]
     [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly IGenericService<Product> _service;
+        private readonly IProductService _service;
 
-        public ProductController(IGenericService<Product> service)
+        public ProductController(IProductService service)
         {
             _service = service;
         }
@@ -56,5 +58,6 @@ namespace InventoryManagement.API.Controllers
             return NoContent();
         }
     }
+
 
 }
