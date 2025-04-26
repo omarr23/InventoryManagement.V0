@@ -1,4 +1,5 @@
 ﻿using InventoryManagement.BLL.manager.services;
+using InventoryManagement.BLL.manager.SupplierService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.API.Controllers
@@ -7,9 +8,9 @@ namespace InventoryManagement.API.Controllers
     [Route("api/[controller]")]
     public class SupplierController : ControllerBase
     {
-        private readonly IGenericService<Supplier> _service;
+        private readonly ISupplierService _service;
 
-        public SupplierController(IGenericService<Supplier> service)
+        public SupplierController(ISupplierService service)
         {
             _service = service;
         }
@@ -25,8 +26,7 @@ namespace InventoryManagement.API.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var supplier = await _service.GetByIdAsync(id);
-            if (supplier == null)
-                return NotFound();
+            if (supplier == null) return NotFound();
             return Ok(supplier);
         }
 
@@ -51,8 +51,7 @@ namespace InventoryManagement.API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var supplier = await _service.GetByIdAsync(id);
-            if (supplier == null)
-                return NotFound();
+            if (supplier == null) return NotFound();
 
             await _service.DeleteAsync(supplier);
             return NoContent();

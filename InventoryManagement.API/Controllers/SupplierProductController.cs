@@ -21,17 +21,17 @@ namespace InventoryManagement.API.Controllers
         {
             await _context.SupplierProducts.AddAsync(supplierProduct);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetSupplierProduct), new { id = supplierProduct.SupplierId }, supplierProduct);
+            return CreatedAtAction(nameof(GetSupplierProduct), new { supplierId = supplierProduct.SupplierId, productId = supplierProduct.ProductId }, supplierProduct);
         }
 
-        // GET: api/SupplierProduct/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<SupplierProduct>> GetSupplierProduct(int id)
+        // GET: api/SupplierProduct/5/10
+        [HttpGet("{supplierId:int}/{productId:int}")]
+        public async Task<ActionResult<SupplierProduct>> GetSupplierProduct(int supplierId, int productId)
         {
             var supplierProduct = await _context.SupplierProducts
                 .Include(sp => sp.Product)
                 .Include(sp => sp.Supplier)
-                .FirstOrDefaultAsync(sp => sp.SupplierId == id);
+                .FirstOrDefaultAsync(sp => sp.SupplierId == supplierId && sp.ProductId == productId);
 
             if (supplierProduct == null)
             {
@@ -41,11 +41,11 @@ namespace InventoryManagement.API.Controllers
             return Ok(supplierProduct);
         }
 
-        // PUT: api/SupplierProduct/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSupplierProduct(int id, SupplierProduct supplierProduct)
+        // PUT: api/SupplierProduct/5/10
+        [HttpPut("{supplierId:int}/{productId:int}")]
+        public async Task<IActionResult> UpdateSupplierProduct(int supplierId, int productId, SupplierProduct supplierProduct)
         {
-            if (id != supplierProduct.SupplierId)
+            if (supplierId != supplierProduct.SupplierId || productId != supplierProduct.ProductId)
             {
                 return BadRequest();
             }
@@ -55,11 +55,13 @@ namespace InventoryManagement.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/SupplierProduct/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSupplierProduct(int id)
+        // DELETE: api/SupplierProduct/5/10
+        [HttpDelete("{supplierId:int}/{productId:int}")]
+        public async Task<IActionResult> DeleteSupplierProduct(int supplierId, int productId)
         {
-            var supplierProduct = await _context.SupplierProducts.FindAsync(id);
+            var supplierProduct = await _context.SupplierProducts
+                .FirstOrDefaultAsync(sp => sp.SupplierId == supplierId && sp.ProductId == productId);
+
             if (supplierProduct == null)
             {
                 return NotFound();
@@ -70,5 +72,4 @@ namespace InventoryManagement.API.Controllers
             return NoContent();
         }
     }
-
 }

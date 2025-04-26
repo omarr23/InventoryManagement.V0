@@ -17,6 +17,18 @@ using InventoryManagement.BLL.manager.auth;
 using InventoryManagement.DAL.Repository.CompanyRepository;
 using InventoryManagement.BLL.manager.company;
 using InventoryManagement.BLL.manager.services;
+using InventoryManagement.BLL.manager.ProductService;
+using InventoryManagement.DAL.Repository.ProductRepository;
+using InventoryManagement.BLL.manager.InventoryService;
+using InventoryManagement.DAL.Repository.InventoryRepository;
+using InventoryManagement.BLL.manager.SupplierService;
+using InventoryManagement.DAL.Repository.SupplierRepository;
+using InventoryManagement.BLL.manager.PaymentService;
+using InventoryManagement.DAL.Repository.PaymentRepository;
+using InventoryManagement.BLL.manager.SupplierProductService;
+using InventoryManagement.DAL.Repository.SupplierProductRepository;
+using InventoryManagement.BLL.manager.InventoryProductService;
+using InventoryManagement.DAL.Repository.InventoryProductRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +92,7 @@ builder.Services.AddAuthorization();
 // =============================================
 //  3. App Services & Repositories
 // =============================================
+//Generic
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
 builder.Services.AddScoped<IUserService, UserService>();
@@ -87,6 +100,26 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+//Product
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+//Inventory
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+//Supplier
+builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
+//payment
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+//SupplierProduct
+builder.Services.AddScoped<IGenericRepository<SupplierProduct>, SupplierProductRepository>();
+builder.Services.AddScoped<IGenericService<SupplierProduct>, SupplierProductService>();
+// InventoryProduct Repository and Service
+builder.Services.AddScoped<IInventoryProductRepository, InventoryProductRepository>();
+builder.Services.AddScoped<IInventoryProductService, InventoryProductService>();
+
+
 
 
 // =============================================

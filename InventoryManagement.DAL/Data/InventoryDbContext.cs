@@ -31,22 +31,26 @@ public class InventoryDbContext : IdentityDbContext<ApplicationUser>
     {
     base.OnModelCreating(modelBuilder);
 
-    // Composite Keys (keep this)
-    modelBuilder.Entity<InventoryProduct>()
-      .HasKey(ip => new { ip.InventoryId, ip.ProductId });
+        // Fluent API Configuration
+        modelBuilder.Entity<InventoryProduct>()
+            .HasKey(ip => new { ip.InventoryId, ip.ProductId }); // composite key
 
-    modelBuilder.Entity<InventoryProduct>()
+        modelBuilder.Entity<InventoryProduct>()
             .HasOne(ip => ip.Inventory)
             .WithMany(i => i.InventoryProducts)
-            .HasForeignKey(ip => ip.InventoryId);
+            .HasForeignKey(ip => ip.InventoryId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    modelBuilder.Entity<InventoryProduct>()
+        modelBuilder.Entity<InventoryProduct>()
             .HasOne(ip => ip.Product)
             .WithMany(p => p.InventoryProducts)
-            .HasForeignKey(ip => ip.ProductId);
+            .HasForeignKey(ip => ip.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+    
 
-    modelBuilder.Entity<SupplierProduct>()
-      .HasKey(sp => new { sp.SupplierId, sp.ProductId });
+        modelBuilder.Entity<SupplierProduct>()
+            .HasKey(sp => new { sp.SupplierId, sp.ProductId }); // composite key
+
         modelBuilder.Entity<SupplierProduct>()
             .HasOne(sp => sp.Supplier)
             .WithMany(s => s.SupplierProducts)

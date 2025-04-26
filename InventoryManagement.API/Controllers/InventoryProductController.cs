@@ -1,4 +1,4 @@
-﻿
+﻿using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,17 +22,17 @@ namespace InventoryManagement.API.Controllers
         {
             await _context.InventoryProducts.AddAsync(inventoryProduct);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetInventoryProduct), new { id = inventoryProduct.InventoryId }, inventoryProduct);
+            return CreatedAtAction(nameof(GetInventoryProduct), new { inventoryId = inventoryProduct.InventoryId, productId = inventoryProduct.ProductId }, inventoryProduct);
         }
 
-        // GET: api/InventoryProduct/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<InventoryProduct>> GetInventoryProduct(int id)
+        // GET: api/InventoryProduct/5/10
+        [HttpGet("{inventoryId:int}/{productId:int}")]
+        public async Task<ActionResult<InventoryProduct>> GetInventoryProduct(int inventoryId, int productId)
         {
             var inventoryProduct = await _context.InventoryProducts
                 .Include(ip => ip.Inventory)
                 .Include(ip => ip.Product)
-                .FirstOrDefaultAsync(ip => ip.InventoryId == id);
+                .FirstOrDefaultAsync(ip => ip.InventoryId == inventoryId && ip.ProductId == productId);
 
             if (inventoryProduct == null)
             {
@@ -42,11 +42,11 @@ namespace InventoryManagement.API.Controllers
             return Ok(inventoryProduct);
         }
 
-        // PUT: api/InventoryProduct/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateInventoryProduct(int id, InventoryProduct inventoryProduct)
+        // PUT: api/InventoryProduct/5/10
+        [HttpPut("{inventoryId:int}/{productId:int}")]
+        public async Task<IActionResult> UpdateInventoryProduct(int inventoryId, int productId, InventoryProduct inventoryProduct)
         {
-            if (id != inventoryProduct.InventoryId)
+            if (inventoryId != inventoryProduct.InventoryId || productId != inventoryProduct.ProductId)
             {
                 return BadRequest();
             }
@@ -56,11 +56,13 @@ namespace InventoryManagement.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/InventoryProduct/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteInventoryProduct(int id)
+        // DELETE: api/InventoryProduct/5/10
+        [HttpDelete("{inventoryId:int}/{productId:int}")]
+        public async Task<IActionResult> DeleteInventoryProduct(int inventoryId, int productId)
         {
-            var inventoryProduct = await _context.InventoryProducts.FindAsync(id);
+            var inventoryProduct = await _context.InventoryProducts
+                .FirstOrDefaultAsync(ip => ip.InventoryId == inventoryId && ip.ProductId == productId);
+
             if (inventoryProduct == null)
             {
                 return NotFound();
@@ -71,5 +73,4 @@ namespace InventoryManagement.API.Controllers
             return NoContent();
         }
     }
-
 }
