@@ -19,4 +19,5 @@ public class Inventory
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<InventoryProduct> InventoryProducts { get; set; } = new List<InventoryProduct>();
+
 }

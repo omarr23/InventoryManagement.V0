@@ -1,50 +1,63 @@
-using InventoryManagement.BLL.Interfaces;
+using InventoryManagement.BLL.manager.user;
 using InventoryManagement.DAL.Models;
+using InventoryManagement.BLL.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]// 🔐 Require authentication for all actions in this controller
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-
+    
     public UserController(IUserService userService)
     {
         _userService = userService;
     }
-
+    
     [HttpGet]
-    public IActionResult GetAll() => Ok(_userService.GetAllUsers());
-
-    [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetAll()
     {
-        var user = _userService.GetUserById(id);
-        if (user == null) return NotFound();
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(users);
+    }
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(string id)  
+    {
+        var user = await _userService.GetUserByIdAsync(id);
+        if (user == null)
+            return NotFound();
         return Ok(user);
     }
+    
+   [HttpPost]
+public async Task<IActionResult> Create(CreateUserDto createUserDto)
+{
+    var createdUser = await _userService.CreateUserAsync(createUserDto);
 
-    [HttpPost]
-    public IActionResult Create(User user)
-    {
-        _userService.CreateUser(user);
-        return CreatedAtAction(nameof(GetById), new { id = user.UserId }, user);
-    }
+    if (createdUser == null)
+        return BadRequest("User creation failed.");
 
+    return CreatedAtAction(nameof(GetById), new { id = createdUser.UserId }, createdUser);
+}
+
+
+    
     [HttpPut("{id}")]
-    public IActionResult Update(int id, User user)
+    public async Task<IActionResult> Update(string id, UserDto userDto)  // Changed to string
     {
-        if (id != user.UserId) return BadRequest();
-        _userService.UpdateUser(user);
+        await _userService.UpdateUserAsync(id, userDto);
         return NoContent();
     }
-
+    
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(string id)  // Changed to string
     {
-        _userService.DeleteUser(id);
+        await _userService.DeleteUserAsync(id);
         return NoContent();
     }
 }

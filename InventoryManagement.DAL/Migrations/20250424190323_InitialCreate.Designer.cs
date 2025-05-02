@@ -4,6 +4,7 @@ using InventoryManagement.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryManagement.DAL.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250424190323_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -437,8 +440,6 @@ namespace InventoryManagement.DAL.Migrations
 
                     b.HasKey("SupplierId", "ProductId");
 
-                    b.HasIndex("ProductId");
-
                     b.ToTable("SupplierProducts");
                 });
 
@@ -460,7 +461,7 @@ namespace InventoryManagement.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("Product", "Product")
-                        .WithMany("InventoryProducts")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -523,21 +524,11 @@ namespace InventoryManagement.DAL.Migrations
 
             modelBuilder.Entity("SupplierProduct", b =>
                 {
-                    b.HasOne("Product", "Product")
-                        .WithMany("SupplierProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Supplier", "Supplier")
+                    b.HasOne("Supplier", null)
                         .WithMany("SupplierProducts")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("Company", b =>
@@ -548,13 +539,6 @@ namespace InventoryManagement.DAL.Migrations
             modelBuilder.Entity("Inventory", b =>
                 {
                     b.Navigation("InventoryProducts");
-                });
-
-            modelBuilder.Entity("Product", b =>
-                {
-                    b.Navigation("InventoryProducts");
-
-                    b.Navigation("SupplierProducts");
                 });
 
             modelBuilder.Entity("Supplier", b =>

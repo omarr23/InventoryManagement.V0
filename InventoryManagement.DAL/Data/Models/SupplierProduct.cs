@@ -10,4 +10,7 @@ public class SupplierProduct
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    //  Relations (Navigation Properties)
+    public Supplier Supplier { get; set; }
+    public Product Product { get; set; }
 }
