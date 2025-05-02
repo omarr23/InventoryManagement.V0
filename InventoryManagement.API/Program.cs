@@ -29,6 +29,7 @@ using InventoryManagement.BLL.manager.SupplierProductService;
 using InventoryManagement.DAL.Repository.SupplierProductRepository;
 using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL.Repository.InventoryProductRepository;
+using InventoryManagement.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -122,6 +123,8 @@ builder.Services.AddScoped<IInventoryProductService, InventoryProductService>();
 
 
 
+
+
 // =============================================
 //  4. MVC + Swagger + JWT Support
 // =============================================
@@ -183,7 +186,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication(); //Enable authentication middleware
