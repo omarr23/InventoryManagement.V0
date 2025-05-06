@@ -1,75 +1,73 @@
-﻿using InventoryManagement.BLL.manager.InventoryProductService;
+﻿using InventoryManagement.BLL.DTO.InventoryProductDTO;
+using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryManagement.API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class InventoryProductController : ControllerBase
     {
-        private readonly InventoryDbContext _context;
+        private readonly IInventoryProductService _service;
 
-        public InventoryProductController(InventoryDbContext context)
+        public InventoryProductController(IInventoryProductService service)
         {
-            _context = context;
+            _service = service;
+        }
+
+        // GET: api/InventoryProduct
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<InventoryProductReadDTO>>> GetAll()
+        {
+            var result = await _service.GetAllAsync();
+            return Ok(result);
+        }
+
+        // GET: api/InventoryProduct/{inventoryId}/{productId}
+        [HttpGet("{inventoryId}/{productId}")]
+        public async Task<ActionResult<InventoryProductReadDTO>> GetById(int inventoryId, int productId)
+        {
+            var result = await _service.GetByIdAsync(inventoryId, productId);
+            if (result == null)
+                return NotFound();
+            return Ok(result);
         }
 
         // POST: api/InventoryProduct
         [HttpPost]
-        public async Task<IActionResult> AddInventoryProduct(InventoryProduct inventoryProduct)
+        public async Task<ActionResult> Create([FromBody] CreateInventoryProductDTO dto)
         {
-            await _context.InventoryProducts.AddAsync(inventoryProduct);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetInventoryProduct), new { inventoryId = inventoryProduct.InventoryId, productId = inventoryProduct.ProductId }, inventoryProduct);
-        }
-
-        // GET: api/InventoryProduct/5/10
-        [HttpGet("{inventoryId:int}/{productId:int}")]
-        public async Task<ActionResult<InventoryProduct>> GetInventoryProduct(int inventoryId, int productId)
-        {
-            var inventoryProduct = await _context.InventoryProducts
-                .Include(ip => ip.Inventory)
-                .Include(ip => ip.Product)
-                .FirstOrDefaultAsync(ip => ip.InventoryId == inventoryId && ip.ProductId == productId);
-
-            if (inventoryProduct == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState); // If the model is invalid, return a bad request with validation errors
             }
 
-            return Ok(inventoryProduct);
-        }
+            // Assuming InventoryId is generated automatically or fetched from the database
+            await _service.AddAsync(dto); // The service method should handle InventoryId
 
-        // PUT: api/InventoryProduct/5/10
-        [HttpPut("{inventoryId:int}/{productId:int}")]
-        public async Task<IActionResult> UpdateInventoryProduct(int inventoryId, int productId, InventoryProduct inventoryProduct)
+            // Modify CreatedAtAction to include both inventoryId and productId
+            return CreatedAtAction(nameof(GetById), new { inventoryId = dto.InventoryId, productId = dto.ProductId }, dto);
+        }
+        // PUT: api/InventoryProduct/{inventoryId}/{productId}
+        [HttpPut("{inventoryId}/{productId}")]
+        public async Task<ActionResult> Update(int inventoryId, int productId, [FromBody] UpdateInventoryProductDTO dto)
         {
-            if (inventoryId != inventoryProduct.InventoryId || productId != inventoryProduct.ProductId)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState); // If the model is invalid, return a bad request with validation errors
             }
 
-            _context.Entry(inventoryProduct).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            await _service.UpdateAsync(inventoryId, productId, dto);
             return NoContent();
         }
 
-        // DELETE: api/InventoryProduct/5/10
-        [HttpDelete("{inventoryId:int}/{productId:int}")]
-        public async Task<IActionResult> DeleteInventoryProduct(int inventoryId, int productId)
+        // DELETE: api/InventoryProduct/{inventoryId}/{productId}
+        [HttpDelete("{inventoryId}/{productId}")]
+        public async Task<ActionResult> Delete(int inventoryId, int productId)
         {
-            var inventoryProduct = await _context.InventoryProducts
-                .FirstOrDefaultAsync(ip => ip.InventoryId == inventoryId && ip.ProductId == productId);
-
-            if (inventoryProduct == null)
-            {
-                return NotFound();
-            }
-
-            _context.InventoryProducts.Remove(inventoryProduct);
-            await _context.SaveChangesAsync();
+            await _service.DeleteAsync(inventoryId, productId);
             return NoContent();
         }
     }

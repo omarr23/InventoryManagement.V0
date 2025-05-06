@@ -1,60 +1,84 @@
 ﻿using InventoryManagement.BLL.manager.InventoryService;
 using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
+using static InventoryManagement.BLL.DTO.InventoryDTO.InventoryDTO;
 
 namespace InventoryManagement.API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class InventoryController : ControllerBase
     {
-        private readonly IInventoryService _service;
+        private readonly IInventoryService _inventoryService;
 
-        public InventoryController(IInventoryService service)
+        public InventoryController(IInventoryService inventoryService)
         {
-            _service = service;
+            _inventoryService = inventoryService;
         }
 
+        // GET: api/Inventory
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<InventoryReadDTO>>> GetAll()
         {
-            var inventories = await _service.GetAllAsync();
-            return Ok(inventories);
+            var inventories = await _inventoryService.GetAllAsync();
+            return Ok(inventories); // Return all inventories with products
         }
 
+        // GET: api/Inventory/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<InventoryReadDTO>> GetById(int id)
         {
-            var inventory = await _service.GetByIdAsync(id);
-            if (inventory == null) return NotFound();
-            return Ok(inventory);
+            var inventory = await _inventoryService.GetByIdAsync(id);
+            if (inventory == null)
+                return NotFound($"Inventory with ID {id} not found.");
+
+            return Ok(inventory); // Return the inventory with products by ID
         }
 
+        // POST: api/Inventory
         [HttpPost]
-        public async Task<IActionResult> Add(Inventory inventory)
+        public async Task<ActionResult> Create([FromBody] CreateInventoryDTO createInventoryDTO)
         {
-            await _service.AddAsync(inventory);
-            return CreatedAtAction(nameof(GetById), new { id = inventory.InventoryId }, inventory);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _inventoryService.AddAsync(createInventoryDTO);
+            return CreatedAtAction(nameof(GetById), new { id = createInventoryDTO.OwnerId }, createInventoryDTO);
         }
 
+        // PUT: api/Inventory/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Inventory inventory)
+        public async Task<ActionResult> Update(int id, [FromBody] UpdateInventoryDTO updateInventoryDTO)
         {
-            if (id != inventory.InventoryId)
-                return BadRequest("ID mismatch");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            await _service.UpdateAsync(inventory);
-            return NoContent();
+            try
+            {
+                await _inventoryService.UpdateAsync(id, updateInventoryDTO);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Inventory with ID {id} not found.");
+            }
+
+            return NoContent(); // Return 204 No Content after successful update
         }
 
+        // DELETE: api/Inventory/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var inventory = await _service.GetByIdAsync(id);
-            if (inventory == null) return NotFound();
+            try
+            {
+                await _inventoryService.DeleteAsync(id);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Inventory with ID {id} not found.");
+            }
 
-            await _service.DeleteAsync(inventory);
-            return NoContent();
+            return NoContent(); // Return 204 No Content after successful deletion
         }
     }
 }

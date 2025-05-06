@@ -23,7 +23,7 @@ using InventoryManagement.BLL.manager.InventoryService;
 using InventoryManagement.DAL.Repository.InventoryRepository;
 using InventoryManagement.BLL.manager.SupplierService;
 using InventoryManagement.DAL.Repository.SupplierRepository;
-using InventoryManagement.BLL.manager.PaymentService;
+using InventoryManagement.BLL.Manager.PaymentService;
 using InventoryManagement.DAL.Repository.PaymentRepository;
 using InventoryManagement.BLL.manager.SupplierProductService;
 using InventoryManagement.DAL.Repository.SupplierProductRepository;
@@ -114,16 +114,11 @@ builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 //SupplierProduct
-builder.Services.AddScoped<IGenericRepository<SupplierProduct>, SupplierProductRepository>();
-builder.Services.AddScoped<IGenericService<SupplierProduct>, SupplierProductService>();
+builder.Services.AddScoped<ISupplierProductService, SupplierProductService>();
+builder.Services.AddScoped<ISupplierProductRepository, SupplierProductRepository>();
 // InventoryProduct Repository and Service
 builder.Services.AddScoped<IInventoryProductRepository, InventoryProductRepository>();
 builder.Services.AddScoped<IInventoryProductService, InventoryProductService>();
-
-
-
-
-
 
 // =============================================
 //  4. MVC + Swagger + JWT Support

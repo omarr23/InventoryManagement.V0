@@ -1,4 +1,5 @@
-﻿using InventoryManagement.BLL.manager.ProductService;
+﻿using InventoryManagement.BLL.DTO.ProductDTO;
+using InventoryManagement.BLL.manager.ProductService;
 using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,37 +28,47 @@ namespace InventoryManagement.API.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var product = await _service.GetByIdAsync(id);
-            if (product == null) return NotFound();
+            if (product == null)
+                return NotFound();
+
             return Ok(product);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Product product)
+        public async Task<IActionResult> Add(ProductDTO.ProductCreatDTO dto)
         {
-            await _service.AddAsync(product);
-            return CreatedAtAction(nameof(GetById), new { id = product.ProductId }, product);
+            await _service.AddAsync(dto);
+            return Ok(); // Or use CreatedAtAction if returning resource
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Product product)
+        public async Task<IActionResult> Update(int id, ProductDTO.ProductUpdateDTO dto)
         {
-            if (id != product.ProductId)
-                return BadRequest("ID mismatch");
-
-            await _service.UpdateAsync(product);
-            return NoContent();
+            try
+            {
+                await _service.UpdateAsync(id, dto);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _service.GetByIdAsync(id);
-            if (product == null) return NotFound();
-
-            await _service.DeleteAsync(product);
-            return NoContent();
+            try
+            {
+                await _service.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
+
+
     }
-
-
 }

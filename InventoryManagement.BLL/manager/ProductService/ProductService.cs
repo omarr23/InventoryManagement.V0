@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using InventoryManagement.DAL.Models;
+﻿using InventoryManagement.DAL.Models;
 using InventoryManagement.DAL.Interfaces;
+using InventoryManagement.BLL.DTO.ProductDTO;
+using InventoryManagement.BLL.Mappers;
 using InventoryManagement.DAL.Repository.ProductRepository;
 
 namespace InventoryManagement.BLL.manager.ProductService
@@ -18,30 +15,41 @@ namespace InventoryManagement.BLL.manager.ProductService
             _repository = repository;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<IEnumerable<ProductDTO.ProductReadDTO>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            var products = await _repository.GetAllAsync();
+            return products.Select(ProductMapper.MapToProductReadDto);
         }
 
-        public async Task<Product?> GetByIdAsync(int id)
+        public async Task<ProductDTO.ProductReadDTO?> GetByIdAsync(int id)
         {
-            return await _repository.GetByIdAsync(id);
+            var product = await _repository.GetByIdAsync(id);
+            return product == null ? null : ProductMapper.MapToProductReadDto(product);
         }
 
-        public async Task AddAsync(Product product)
+        public async Task AddAsync(ProductDTO.ProductCreatDTO dto)
         {
+            var product = ProductMapper.MapToProduct(dto);
             await _repository.AddAsync(product);
             await _repository.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Product product)
+        public async Task UpdateAsync(int id, ProductDTO.ProductUpdateDTO dto)
         {
-            _repository.Update(product);
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null)
+                throw new KeyNotFoundException($"Product with ID {id} not found.");
+
+            ProductMapper.MapToExistingProduct(dto, product);
             await _repository.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Product product)
+        public async Task DeleteAsync(int id)
         {
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null)
+                throw new KeyNotFoundException($"Product with ID {id} not found.");
+
             _repository.Delete(product);
             await _repository.SaveChangesAsync();
         }

@@ -9,6 +9,10 @@ namespace InventoryManagement.DAL.Repository.PaymentRepository
 {
     public interface IPaymentRepository : IGenericRepository<Payment>
     {
+       
+          
+        
+
         // You can add  methods here later
     }
 }
