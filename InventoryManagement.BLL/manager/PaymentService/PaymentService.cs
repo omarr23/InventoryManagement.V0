@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace InventoryManagement.BLL.Manager.PaymentService
+namespace InventoryManagement.BLL.manager.PaymentService
 {
     public class PaymentService : IPaymentService
     {
