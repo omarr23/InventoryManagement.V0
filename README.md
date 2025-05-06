@@ -1,20 +1,20 @@
-Posts Schema
+#Posts Schema
 
-company
+###company
 {
   "companyName": "string",
   "address": "string",
   "contactInfo": "string"
 }
 
-user
+###user
 {
   "userId": "string",
   "username": "string",
   "password": "string",
   "role": "string"
 }
-product
+###product
 {
   "name": "string",
   "sku": "string",
@@ -22,7 +22,7 @@ product
   "price": 1000000
 }
 
-inventory
+###inventory
 {
   "ownerType": "COMPANY",
   "ownerId": 2147483647,
@@ -37,14 +37,14 @@ inventory
   ]
 }
 
-inventory_product
+###inventory_product
 {
   "inventoryId": 2147483647,
   "productId": 2147483647,
   "quantity": 2147483647
 }
 
-payments
+###payments
 {
   "userId": 0,
   "amount": 999999999.99,
@@ -55,7 +55,7 @@ payments
   "stripeChargeId": "string"
 }
 
-supplier
+###supplier
 {
   "name": "string",
   "address": "string",
@@ -63,7 +63,7 @@ supplier
   "email": "user@example.com"
 }
 
-supplier_product
+###supplier_product
 {
   "supplierId": 2147483647,
   "productId": 2147483647,
