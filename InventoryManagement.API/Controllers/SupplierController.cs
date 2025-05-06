@@ -1,6 +1,9 @@
 ﻿using InventoryManagement.BLL.manager.services;
 using InventoryManagement.BLL.manager.SupplierService;
+using InventoryManagement.BLL.Mappers;
 using Microsoft.AspNetCore.Mvc;
+using static InventoryManagement.BLL.DTO.SupplierDTO.SupplierDTO;
+
 
 namespace InventoryManagement.API.Controllers
 {
@@ -15,6 +18,7 @@ namespace InventoryManagement.API.Controllers
             _service = service;
         }
 
+        // Get all suppliers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,39 +26,66 @@ namespace InventoryManagement.API.Controllers
             return Ok(suppliers);
         }
 
+        // Get supplier by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var supplier = await _service.GetByIdAsync(id);
-            if (supplier == null) return NotFound();
+            if (supplier == null)
+                return NotFound();
             return Ok(supplier);
         }
 
+        // Add a new supplier
         [HttpPost]
-        public async Task<IActionResult> Add(Supplier supplier)
+        [HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] SupplierCreateDTO dto)
         {
-            await _service.AddAsync(supplier);
-            return CreatedAtAction(nameof(GetById), new { id = supplier.SupplierId }, supplier);
+            if (dto == null)
+                return BadRequest("Invalid supplier data.");
+
+            // Add the supplier
+            await _service.AddAsync(dto);
+
+            // Now, fetch the supplier by ID that was created by the database
+            var suppliers = await _service.GetAllAsync();
+            var createdSupplier = suppliers.LastOrDefault(); // Assuming it's the last supplier added
+
+            if (createdSupplier == null)
+                return NotFound();
+
+            return CreatedAtAction(nameof(GetById), new { id = createdSupplier.SupplierId }, createdSupplier);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Supplier supplier)
-        {
-            if (id != supplier.SupplierId)
-                return BadRequest("ID mismatch");
 
-            await _service.UpdateAsync(supplier);
+
+        // Update an existing supplier
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] SupplierUpdateDTO dto)
+        {
+            if (dto == null || id != dto.SupplierId)
+                return BadRequest("ID mismatch.");
+
+            var supplier = await _service.GetByIdAsync(id);
+            if (supplier == null)
+                return NotFound();
+
+            await _service.UpdateAsync(id, dto);
             return NoContent();
         }
 
+        // Delete a supplier
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var supplier = await _service.GetByIdAsync(id);
-            if (supplier == null) return NotFound();
+            if (supplier == null)
+                return NotFound();
 
-            await _service.DeleteAsync(supplier);
+            await _service.DeleteAsync(id);
             return NoContent();
         }
     }
 }
+

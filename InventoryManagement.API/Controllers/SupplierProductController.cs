@@ -1,75 +1,99 @@
-﻿using InventoryManagement.DAL;
+﻿using InventoryManagement.BLL.manager.SupplierProductService;
+using InventoryManagement.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static InventoryManagement.BLL.DTO.SupplierProductDTO.SupplierPrpductDTO;
 
 namespace InventoryManagement.API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class SupplierProductController : ControllerBase
     {
-        private readonly InventoryDbContext _context;
+        private readonly ISupplierProductService _supplierProductService;
 
-        public SupplierProductController(InventoryDbContext context)
+        // Constructor with dependency injection of ISupplierProductService
+        public SupplierProductController(ISupplierProductService supplierProductService)
         {
-            _context = context;
+            _supplierProductService = supplierProductService;
         }
 
-        // POST: api/SupplierProduct
+        // POST api/supplierproduct
         [HttpPost]
-        public async Task<IActionResult> AddSupplierProduct(SupplierProduct supplierProduct)
+        public async Task<IActionResult> AddSupplierProductAsync([FromBody] CreateSupplierProductDTO dto)
         {
-            await _context.SupplierProducts.AddAsync(supplierProduct);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetSupplierProduct), new { supplierId = supplierProduct.SupplierId, productId = supplierProduct.ProductId }, supplierProduct);
+            try
+            {
+                await _supplierProductService.AddSupplierProductAsync(dto);
+
+
+                return CreatedAtRoute(
+                    "GetSupplierProduct",
+                    new { supplierId = dto.SupplierId, productId = dto.ProductId },
+                    value: dto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);  // Handle already existing relation
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        // GET: api/SupplierProduct/5/10
-        [HttpGet("{supplierId:int}/{productId:int}")]
-        public async Task<ActionResult<SupplierProduct>> GetSupplierProduct(int supplierId, int productId)
-        {
-            var supplierProduct = await _context.SupplierProducts
-                .Include(sp => sp.Product)
-                .Include(sp => sp.Supplier)
-                .FirstOrDefaultAsync(sp => sp.SupplierId == supplierId && sp.ProductId == productId);
 
+
+        // GET api/supplierproduct/{supplierId}/{productId}
+        [HttpGet("{supplierId}/{productId}", Name = "GetSupplierProduct")]
+        public async Task<IActionResult> GetSupplierProductByIdAsync(int supplierId, int productId)
+        {
+            var supplierProduct = await _supplierProductService.GetSupplierProductByIdAsync(supplierId, productId);
             if (supplierProduct == null)
             {
-                return NotFound();
+                return NotFound($"SupplierProduct with SupplierId {supplierId} and ProductId {productId} not found.");
             }
-
             return Ok(supplierProduct);
         }
 
-        // PUT: api/SupplierProduct/5/10
-        [HttpPut("{supplierId:int}/{productId:int}")]
-        public async Task<IActionResult> UpdateSupplierProduct(int supplierId, int productId, SupplierProduct supplierProduct)
-        {
-            if (supplierId != supplierProduct.SupplierId || productId != supplierProduct.ProductId)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(supplierProduct).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return NoContent();
+
+        // PUT api/supplierproduct
+        [HttpPut]
+        public async Task<IActionResult> UpdateSupplierProductAsync([FromBody] UpdateSupplierProductDTO dto)
+        {
+            try
+            {
+                await _supplierProductService.UpdateSupplierProductAsync(dto);
+                return NoContent();  // Return no content if the update is successful
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);  // Handle not found exception
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        // DELETE: api/SupplierProduct/5/10
-        [HttpDelete("{supplierId:int}/{productId:int}")]
-        public async Task<IActionResult> DeleteSupplierProduct(int supplierId, int productId)
+        // DELETE api/supplierproduct/{supplierId}/{productId}
+        [HttpDelete("{supplierId}/{productId}")]
+        public async Task<IActionResult> DeleteSupplierProductAsync(int supplierId, int productId)
         {
-            var supplierProduct = await _context.SupplierProducts
-                .FirstOrDefaultAsync(sp => sp.SupplierId == supplierId && sp.ProductId == productId);
-
-            if (supplierProduct == null)
+            try
             {
-                return NotFound();
+                await _supplierProductService.DeleteSupplierProductAsync(supplierId, productId);
+                return NoContent();  // Return no content if the delete is successful
             }
-
-            _context.SupplierProducts.Remove(supplierProduct);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);  // Handle not found exception
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

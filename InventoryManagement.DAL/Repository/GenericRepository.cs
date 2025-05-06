@@ -6,7 +6,7 @@ namespace InventoryManagement.DAL.Repositories;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
-    private readonly InventoryDbContext _context;
+    protected readonly InventoryDbContext _context;
     private readonly DbSet<T> _dbSet;
 
     public GenericRepository(InventoryDbContext context)

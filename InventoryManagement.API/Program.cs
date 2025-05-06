@@ -23,12 +23,13 @@ using InventoryManagement.BLL.manager.InventoryService;
 using InventoryManagement.DAL.Repository.InventoryRepository;
 using InventoryManagement.BLL.manager.SupplierService;
 using InventoryManagement.DAL.Repository.SupplierRepository;
-using InventoryManagement.BLL.manager.PaymentService;
+using InventoryManagement.BLL.Manager.PaymentService;
 using InventoryManagement.DAL.Repository.PaymentRepository;
 using InventoryManagement.BLL.manager.SupplierProductService;
 using InventoryManagement.DAL.Repository.SupplierProductRepository;
 using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL.Repository.InventoryProductRepository;
+using InventoryManagement.BLL.manager.PaymentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -113,8 +114,8 @@ builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 //SupplierProduct
-builder.Services.AddScoped<IGenericRepository<SupplierProduct>, SupplierProductRepository>();
-builder.Services.AddScoped<IGenericService<SupplierProduct>, SupplierProductService>();
+builder.Services.AddScoped<ISupplierProductService, SupplierProductService>();
+builder.Services.AddScoped<ISupplierProductRepository, SupplierProductRepository>();
 // InventoryProduct Repository and Service
 builder.Services.AddScoped<IInventoryProductRepository, InventoryProductRepository>();
 builder.Services.AddScoped<IInventoryProductService, InventoryProductService>();

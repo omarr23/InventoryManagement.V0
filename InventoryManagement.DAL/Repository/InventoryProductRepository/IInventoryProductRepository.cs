@@ -10,6 +10,8 @@ namespace InventoryManagement.DAL.Repository.InventoryProductRepository
     public interface IInventoryProductRepository : IGenericRepository<InventoryProduct>
     {
         // Custom operation specific to InventoryProduct
+        Task<InventoryProduct?> GetByIdAsync(int inventoryId, int productId);
+
         Task<InventoryProduct?> GetInventoryProductByProductIdAsync(int productId);
     }
 }
