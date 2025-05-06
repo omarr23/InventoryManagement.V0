@@ -7,7 +7,7 @@ namespace InventoryManagement.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔐 Require authentication for all actions in this controller
+    // [Authorize] // 🔐 Require authentication for all actions in this controller
     public class CompanyController : ControllerBase
     {
         private readonly ICompanyService _companyService;

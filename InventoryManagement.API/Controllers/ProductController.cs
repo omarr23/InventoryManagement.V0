@@ -2,12 +2,14 @@
 using InventoryManagement.BLL.manager.ProductService;
 using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryManagement.API.Controllers
 {
     // ProductController.cs
     [ApiController]
     [Route("api/[controller]")]
+    // [Authorize] // Uncomment if you want to require authentication for this controller
     public class ProductController : ControllerBase
     {
         private readonly IProductService _service;
@@ -18,7 +20,14 @@ namespace InventoryManagement.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationParameters parameters)
+        {
+            var paginatedResult = await _service.GetPaginatedAsync(parameters);
+            return Ok(paginatedResult);
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllWithoutPagination()
         {
             var products = await _service.GetAllAsync();
             return Ok(products);

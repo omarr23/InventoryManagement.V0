@@ -53,5 +53,21 @@ namespace InventoryManagement.BLL.manager.ProductService
             _repository.Delete(product);
             await _repository.SaveChangesAsync();
         }
+
+        public async Task<PaginatedResult<ProductDTO.ProductReadDTO>> GetPaginatedAsync(PaginationParameters parameters)
+        {
+            var (products, totalCount) = await _repository.GetPaginatedAsync(parameters.PageNumber, parameters.PageSize);
+            
+            var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize);
+            
+            return new PaginatedResult<ProductDTO.ProductReadDTO>
+            {
+                Items = products.Select(ProductMapper.MapToProductReadDto),
+                TotalCount = totalCount,
+                PageNumber = parameters.PageNumber,
+                PageSize = parameters.PageSize,
+                TotalPages = totalPages
+            };
+        }
     }
 }

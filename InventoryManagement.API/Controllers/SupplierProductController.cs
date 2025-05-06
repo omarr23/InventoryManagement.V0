@@ -3,11 +3,13 @@ using InventoryManagement.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static InventoryManagement.BLL.DTO.SupplierProductDTO.SupplierPrpductDTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Uncomment if you want to require authentication for this controller
     public class SupplierProductController : ControllerBase
     {
         private readonly ISupplierProductService _supplierProductService;

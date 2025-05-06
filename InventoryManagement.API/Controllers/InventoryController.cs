@@ -1,5 +1,6 @@
 ﻿using InventoryManagement.BLL.manager.InventoryService;
 using InventoryManagement.BLL.manager.services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static InventoryManagement.BLL.DTO.InventoryDTO.InventoryDTO;
 
@@ -7,6 +8,7 @@ namespace InventoryManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InventoryController : ControllerBase
     {
         private readonly IInventoryService _inventoryService;

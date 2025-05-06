@@ -3,10 +3,11 @@ using InventoryManagement.BLL.manager.PaymentService;
 using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
 namespace InventoryManagement.API.Controllers
-{
+{using Microsoft.AspNetCore.Authorization;
 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // Uncomment if you want to require authentication for this controller
     public class PaymentsController : ControllerBase
     {
         private readonly IPaymentService _paymentService;

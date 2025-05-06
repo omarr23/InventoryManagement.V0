@@ -3,11 +3,12 @@ using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authorization;
 namespace InventoryManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Uncomment if you want to require authentication for this controller
     public class InventoryProductController : ControllerBase
     {
         private readonly IInventoryProductService _service;

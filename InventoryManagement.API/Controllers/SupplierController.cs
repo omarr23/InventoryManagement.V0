@@ -3,12 +3,14 @@ using InventoryManagement.BLL.manager.SupplierService;
 using InventoryManagement.BLL.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using static InventoryManagement.BLL.DTO.SupplierDTO.SupplierDTO;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace InventoryManagement.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    // [Authorize] // Uncomment if you want to require authentication for this controller
     public class SupplierController : ControllerBase
     {
         private readonly ISupplierService _service;

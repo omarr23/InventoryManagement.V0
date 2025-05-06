@@ -47,5 +47,18 @@ namespace InventoryManagement.DAL.Repository.ProductRepository
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<(IEnumerable<Product> Products, int TotalCount)> GetPaginatedAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.Products.AsQueryable();
+            var totalCount = await query.CountAsync();
+            
+            var products = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (products, totalCount);
+        }
     }
 }
