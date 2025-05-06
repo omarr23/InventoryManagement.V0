@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using InventoryManagement.BLL.DTO;
 
 namespace InventoryManagement.BLL.manager.services
 {
@@ -15,5 +16,10 @@ namespace InventoryManagement.BLL.manager.services
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
+        Task<PaginatedResultDto<T>> GetPaginatedAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? filter = null,
+            string? orderBy = null);
     }
 }

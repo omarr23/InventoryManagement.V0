@@ -19,10 +19,14 @@ namespace InventoryManagement.API.Controllers
 
         // GET: api/company
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? filter = null,
+            [FromQuery] string? orderBy = null)
         {
-            var companies = await _companyService.GetAllCompaniesAsync();
-            return Ok(companies);
+            var result = await _companyService.GetPaginatedCompaniesAsync(pageNumber, pageSize, filter, orderBy);
+            return Ok(result);
         }
 
         // GET: api/company/{id}

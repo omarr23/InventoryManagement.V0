@@ -16,7 +16,7 @@ namespace InventoryManagement.DAL.Repository.CompanyRepository
         public async Task<Company?> GetByIdAsync(int id)
         {
             return await _context.Companies
-                .Include(c => c.Users) //  eager load users
+                .Include(c => c.Users) // eager load users
                 .FirstOrDefaultAsync(c => c.CompanyId == id);
         }
 

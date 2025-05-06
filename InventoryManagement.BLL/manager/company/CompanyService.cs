@@ -4,14 +4,19 @@ using InventoryManagement.DAL.Models;
 using InventoryManagement.DAL.Repository.CompanyRepository;
 using InventoryManagement.BLL.manager.company;
 using InventoryManagement.BLL.DTO.companyDTO;
+using InventoryManagement.BLL.manager.services;
+using Microsoft.EntityFrameworkCore;
+using InventoryManagement.DAL;
 
 public class CompanyService : ICompanyService
 {
     private readonly ICompanyRepository _companyRepository;
+    private readonly InventoryDbContext _context;
 
-    public CompanyService(ICompanyRepository companyRepository)
+    public CompanyService(ICompanyRepository companyRepository, InventoryDbContext context)
     {
         _companyRepository = companyRepository;
+        _context = context;
     }
 
     public async Task<IEnumerable<CompanyDto>> GetAllCompaniesAsync()
@@ -72,5 +77,29 @@ public class CompanyService : ICompanyService
         {
             await _companyRepository.DeleteAsync(company);
         }
+    }
+
+    public async Task<PaginatedResultDto<CompanyDto>> GetPaginatedCompaniesAsync(
+        int pageNumber = 1,
+        int pageSize = 10,
+        string? filter = null,
+        string? orderBy = null)
+    {
+        var query = _context.Companies
+            .Include(c => c.Users)
+            .AsQueryable();
+
+        var result = await PaginationService.GetPaginatedResultAsync(query, pageNumber, pageSize, filter, orderBy);
+        
+        // Convert the items to DTOs
+        var dtoItems = result.Items.Select(c => new CompanyDto
+        {
+            CompanyId = c.CompanyId,
+            CompanyName = c.CompanyName,
+            Address = c.Address,
+            ContactInfo = c.ContactInfo
+        });
+
+        return new PaginatedResultDto<CompanyDto>(dtoItems, result.Metadata);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using InventoryManagement.BLL.manager.services;
 using InventoryManagement.DAL.Repository.PaymentRepository;
+using InventoryManagement.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,8 @@ namespace InventoryManagement.BLL.manager.PaymentService
 {
     public class PaymentService : GenericService<Payment>, IPaymentService
     {
-        public PaymentService(IPaymentRepository repository) : base(repository)
+        public PaymentService(IPaymentRepository repository, InventoryDbContext context) 
+            : base(repository, context)
         {
         }
     }

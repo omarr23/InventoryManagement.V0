@@ -1,5 +1,6 @@
 ﻿using InventoryManagement.BLL.manager.services;
 using InventoryManagement.DAL.Repository.InventoryProductRepository;
+using InventoryManagement.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,8 @@ namespace InventoryManagement.BLL.manager.InventoryProductService
     {
         private readonly IInventoryProductRepository _repository;
 
-        public InventoryProductService(IInventoryProductRepository repository) : base(repository)
+        public InventoryProductService(IInventoryProductRepository repository, InventoryDbContext context) 
+            : base(repository, context)
         {
             _repository = repository;
         }

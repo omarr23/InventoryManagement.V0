@@ -1,6 +1,7 @@
 ﻿using InventoryManagement.BLL.manager.services;
 using InventoryManagement.DAL.Interfaces;
 using InventoryManagement.DAL.Repository.SupplierRepository;
+using InventoryManagement.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,8 @@ namespace InventoryManagement.BLL.manager.SupplierService
 {
     public class SupplierService : GenericService<Supplier>, ISupplierService
     {
-        public SupplierService(ISupplierRepository repository) : base(repository)
+        public SupplierService(ISupplierRepository repository, InventoryDbContext context) 
+            : base(repository, context)
         {
         }
 

@@ -1,6 +1,8 @@
 using InventoryManagement.DAL.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Linq.Dynamic.Core;
 
 namespace InventoryManagement.DAL.Repositories;
 

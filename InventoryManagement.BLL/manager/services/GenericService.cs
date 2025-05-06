@@ -1,20 +1,25 @@
 ﻿using InventoryManagement.DAL.Interfaces;
+using InventoryManagement.BLL.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using InventoryManagement.DAL;
 
 namespace InventoryManagement.BLL.manager.services
 {
     public class GenericService<T> : IGenericService<T> where T : class
     {
         private readonly IGenericRepository<T> _repository;
+        private readonly InventoryDbContext _context;
 
-        public GenericService(IGenericRepository<T> repository)
+        public GenericService(IGenericRepository<T> repository, InventoryDbContext context)
         {
             _repository = repository;
+            _context = context;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -49,6 +54,15 @@ namespace InventoryManagement.BLL.manager.services
             _repository.Delete(entity);
             await _repository.SaveChangesAsync();
         }
-    }
 
+        public async Task<PaginatedResultDto<T>> GetPaginatedAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? filter = null,
+            string? orderBy = null)
+        {
+            var query = _context.Set<T>().AsQueryable();
+            return await PaginationService.GetPaginatedResultAsync(query, pageNumber, pageSize, filter, orderBy);
+        }
+    }
 }
