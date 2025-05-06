@@ -12,3 +12,5 @@ namespace InventoryManagement.BLL.manager.company
     Task DeleteCompanyAsync(int id);
 }
 }
+
+//Interfaces decouple the layers from specific implementations.
