@@ -23,7 +23,7 @@ using InventoryManagement.BLL.manager.InventoryService;
 using InventoryManagement.DAL.Repository.InventoryRepository;
 using InventoryManagement.BLL.manager.SupplierService;
 using InventoryManagement.DAL.Repository.SupplierRepository;
-using InventoryManagement.BLL.Manager.PaymentService;
+using InventoryManagement.BLL.manager.PaymentService;
 using InventoryManagement.DAL.Repository.PaymentRepository;
 using InventoryManagement.BLL.manager.SupplierProductService;
 using InventoryManagement.DAL.Repository.SupplierProductRepository;
