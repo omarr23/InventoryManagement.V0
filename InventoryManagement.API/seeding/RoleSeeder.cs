@@ -12,7 +12,7 @@ public static class RoleSeeder
     var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     // Seed roles
-    string[] roles = { "ADMIN", "USER", "MANAGER" }; // Add MANAGER here
+    string[] roles = ["ADMIN", "USER", "MANAGER"]; // Add MANAGER here
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))

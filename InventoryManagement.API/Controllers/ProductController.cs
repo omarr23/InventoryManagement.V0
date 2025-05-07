@@ -9,7 +9,7 @@ namespace InventoryManagement.API.Controllers
     // ProductController.cs
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Uncomment if you want to require authentication for this controller
+    [Authorize] // Uncomment if you want to require authentication for this controller
     public class ProductController : ControllerBase
     {
         private readonly IProductService _service;

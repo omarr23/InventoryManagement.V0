@@ -14,7 +14,6 @@ namespace InventoryManagement.API.Controllers
     {
         private readonly ISupplierProductService _supplierProductService;
 
-        // Constructor with dependency injection of ISupplierProductService
         public SupplierProductController(ISupplierProductService supplierProductService)
         {
             _supplierProductService = supplierProductService;

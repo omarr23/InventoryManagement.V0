@@ -10,7 +10,7 @@ namespace InventoryManagement.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Uncomment if you want to require authentication for this controller
+    [Authorize] // Uncomment if you want to require authentication for this controller
     public class SupplierController : ControllerBase
     {
         private readonly ISupplierService _service;
