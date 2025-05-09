@@ -33,7 +33,7 @@ namespace InventoryManagement.API.Controllers
             return Ok(products);
         }
 
-        [HttpGet("deleted")]
+        [HttpGet("Inactive")]
         public async Task<IActionResult> GetSoftDeleted()
         {
             var products = await _service.GetSoftDeletedAsync();
