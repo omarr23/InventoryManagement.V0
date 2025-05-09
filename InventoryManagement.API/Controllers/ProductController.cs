@@ -1,12 +1,10 @@
 ﻿using InventoryManagement.BLL.DTO.ProductDTO;
 using InventoryManagement.BLL.manager.ProductService;
-using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryManagement.API.Controllers
 {
-    // ProductController.cs
     [ApiController]
     [Route("api/[controller]")]
     [Authorize] // Uncomment if you want to require authentication for this controller
@@ -33,7 +31,7 @@ namespace InventoryManagement.API.Controllers
             return Ok(products);
         }
 
-        [HttpGet("Inactive")]
+        [HttpGet("inactive")]
         public async Task<IActionResult> GetSoftDeleted()
         {
             var products = await _service.GetSoftDeletedAsync();
@@ -51,14 +49,18 @@ namespace InventoryManagement.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(ProductDTO.ProductCreatDTO dto)
+        public async Task<IActionResult> Add([FromBody] ProductDTO.ProductCreatDTO dto)
         {
-            await _service.AddAsync(dto);
-            return Ok(); // Or use CreatedAtAction if returning resource
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var createdProduct = await _service.AddAsync(dto);
+
+            return CreatedAtAction(nameof(GetById), new { id = createdProduct.ProductId }, createdProduct);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, ProductDTO.ProductUpdateDTO dto)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductDTO.ProductUpdateDTO dto)
         {
             try
             {
