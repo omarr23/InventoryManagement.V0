@@ -13,7 +13,8 @@ namespace InventoryManagement.BLL.manager.ProductService
     {
         Task<IEnumerable<ProductDTO.ProductReadDTO>> GetAllAsync();
         Task<ProductDTO.ProductReadDTO?> GetByIdAsync(int id);
-        Task AddAsync(ProductDTO.ProductCreatDTO dto);
+        Task<ProductDTO.ProductReadDTO> AddAsync(ProductDTO.ProductCreatDTO dto);
+
         Task UpdateAsync(int id, ProductDTO.ProductUpdateDTO dto);
         Task DeleteAsync(int id);
         Task<PaginatedResult<ProductDTO.ProductReadDTO>> GetPaginatedAsync(PaginationParameters parameters);

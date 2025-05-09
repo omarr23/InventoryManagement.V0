@@ -41,13 +41,17 @@ namespace InventoryManagement.BLL.manager.ProductService
             var product = await _repository.GetByIdAsync(id);
             return product == null ? null : ProductMapper.MapToProductReadDto(product);
         }
-
-        public async Task AddAsync(ProductDTO.ProductCreatDTO dto)
+        
+        public async Task<ProductDTO.ProductReadDTO> AddAsync(ProductDTO.ProductCreatDTO dto)
         {
-            var product = ProductMapper.MapToProduct(dto);
+        var product = ProductMapper.MapToProduct(dto);
             await _repository.AddAsync(product);
             await _repository.SaveChangesAsync();
+    
+            return ProductMapper.MapToProductReadDto(product);
         }
+
+
 
         public async Task UpdateAsync(int id, ProductDTO.ProductUpdateDTO dto)
         {
