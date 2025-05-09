@@ -33,6 +33,13 @@ namespace InventoryManagement.API.Controllers
             return Ok(products);
         }
 
+        [HttpGet("deleted")]
+        public async Task<IActionResult> GetSoftDeleted()
+        {
+            var products = await _service.GetSoftDeletedAsync();
+            return Ok(products);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -77,7 +84,5 @@ namespace InventoryManagement.API.Controllers
                 return NotFound();
             }
         }
-
-
     }
 }

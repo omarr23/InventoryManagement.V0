@@ -39,19 +39,28 @@ namespace InventoryManagement.BLL.manager.InventoryService
         }
 
         // Add a new Inventory with Inventory Products
-        public async Task AddAsync(InventoryDTO.CreateInventoryDTO dto)
+        public async Task<InventoryDTO.InventoryReadDTO> AddAsync(InventoryDTO.CreateInventoryDTO dto, string userId)
         {
-            var inventory = InventoryMapper.MapToInventory(dto); // Map DTO to Inventory entity
-            var inventoryProducts = dto.InventoryProducts.Select(ip => new InventoryProduct
-            {
-                ProductId = ip.ProductId,
-                Quantity = ip.Quantity
-            }).ToList();
+            var inventory = InventoryMapper.MapToInventory(dto, userId); // Map DTO to Inventory entity with userId
+            
+            // First save the inventory to get its ID
+            await _repository.AddAsync(inventory);
+            await _repository.SaveChangesAsync();
+
+            // Now create the inventory products with the correct inventory ID
+            var inventoryProducts = dto.InventoryProducts.Select(ip => 
+                InventoryProductMapper.MapToInventoryProduct(ip, inventory.InventoryId)
+            ).ToList();
 
             inventory.InventoryProducts = inventoryProducts; // Link Inventory with InventoryProducts
+            await _repository.SaveChangesAsync(); // Save the inventory products
 
-            await _repository.AddAsync(inventory);
-            await _repository.SaveChangesAsync(); // Save the new inventory along with inventory products to DB
+            // Reload the inventory with included Product data
+            var reloadedInventory = await _repository.GetByIdAsync(inventory.InventoryId);
+            if (reloadedInventory == null)
+                throw new Exception("Failed to reload created inventory");
+
+            return InventoryMapper.MapToInventoryReadDto(reloadedInventory); // Return the created inventory
         }
 
         // Update an existing Inventory with Inventory Products
@@ -68,6 +77,7 @@ namespace InventoryManagement.BLL.manager.InventoryService
             var inventoryProducts = dto.InventoryProducts.Select(ip => new InventoryProduct
             {
                 ProductId = ip.ProductId,
+                
                 Quantity = ip.Quantity
             }).ToList();
             // Add new InventoryProducts

@@ -69,5 +69,11 @@ namespace InventoryManagement.BLL.manager.ProductService
                 TotalPages = totalPages
             };
         }
+
+        public async Task<IEnumerable<ProductDTO.ProductReadDTO>> GetSoftDeletedAsync()
+        {
+            var products = await _repository.GetSoftDeletedAsync();
+            return products.Select(ProductMapper.MapToProductReadDto);
+        }
     }
 }

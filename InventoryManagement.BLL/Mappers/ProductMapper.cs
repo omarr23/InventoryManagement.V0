@@ -17,7 +17,9 @@ namespace InventoryManagement.BLL.Mappers
                 Name = dto.Name,
                 Sku = dto.Sku,
                 Description = dto.Description,
-                Price = dto.Price
+                Price = dto.Price,
+                IsDeleted = false,
+                DeletedAt = null
             };
         }
         //mapp to update
@@ -40,9 +42,9 @@ namespace InventoryManagement.BLL.Mappers
                 Description = product.Description,
                 Price = product.Price,
                 CreatedAt = product.CreatedAt,
-                UpdatedAt = product.UpdatedAt
-
-
+                UpdatedAt = product.UpdatedAt,
+                IsDeleted = product.IsDeleted,
+                DeletedAt = product.DeletedAt
             };
         }
     }

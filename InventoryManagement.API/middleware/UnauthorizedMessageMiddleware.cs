@@ -23,7 +23,7 @@ public class UnauthorizedMessageMiddleware
             context.Response.Body = originalBody;
             context.Response.ContentType = "application/json";
 
-            var customResponse = new { message = "You are not login" };
+            var customResponse = new { message = "Login first" };
             await context.Response.WriteAsJsonAsync(customResponse);
         }
         else

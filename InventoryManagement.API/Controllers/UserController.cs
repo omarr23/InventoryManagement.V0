@@ -8,7 +8,7 @@ namespace InventoryManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Manager")] // 🔐 
+// [Authorize(Roles = "Admin,Manager")] // 🔐 
 
 public class UserController : ControllerBase
 {

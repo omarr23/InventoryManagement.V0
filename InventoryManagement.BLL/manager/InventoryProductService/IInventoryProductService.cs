@@ -15,7 +15,7 @@ namespace InventoryManagement.BLL.manager.InventoryProductService
 
         Task<InventoryProductReadDTO?> GetByIdAsync(int inventoryId, int productId);
 
-        Task AddAsync(CreateInventoryProductDTO dto);
+        Task AddAsync(CreateInventoryProductDTO dto, int inventoryId);
 
         Task UpdateAsync(int inventoryId, int productId, UpdateInventoryProductDTO dto);
 

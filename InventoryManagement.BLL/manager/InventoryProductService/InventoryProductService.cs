@@ -36,14 +36,14 @@ namespace InventoryManagement.BLL.manager.InventoryProductService
         }
 
         // Add a new InventoryProduct
-        public async Task AddAsync(CreateInventoryProductDTO dto)
+        public async Task AddAsync(CreateInventoryProductDTO dto, int inventoryId)
         {
             // Validation
             if (dto.Quantity <= 0)
                 throw new ArgumentException("Quantity must be a positive value.");
 
             // Map DTO to entity
-            var inventoryProduct = InventoryProductMapper.MapToInventoryProduct(dto);
+            var inventoryProduct = InventoryProductMapper.MapToInventoryProduct(dto, inventoryId);
             await _repository.AddAsync(inventoryProduct);
             await _repository.SaveChangesAsync(); // Save changes to the database
         }

@@ -48,11 +48,8 @@ namespace InventoryManagement.BLL.DTO.ProductDTO
             [Required]
             [Range(1, 1000000.00)]
             public decimal Price { get; set; }
-
-
-
-
         }
+
         //read product
         public class ProductReadDTO
         {
@@ -63,7 +60,10 @@ namespace InventoryManagement.BLL.DTO.ProductDTO
             public decimal Price { get; set; }
             public DateTime CreatedAt { get; set; }
             public DateTime UpdatedAt { get; set; }
+            public bool IsDeleted { get; set; }
+            public DateTime? DeletedAt { get; set; }
         }
+
         //update product 
         public class ProductUpdateDTO
         {
@@ -74,13 +74,10 @@ namespace InventoryManagement.BLL.DTO.ProductDTO
             [StringLength(50)]
             public string Sku { get; set; } = string.Empty;
             [StringLength(500)]
-
             public string Description { get; set; } = string.Empty;
             [Required]
             [Range(1, 1000000.00)]
             public decimal Price { get; set; }
-
         }
-
     }
 }

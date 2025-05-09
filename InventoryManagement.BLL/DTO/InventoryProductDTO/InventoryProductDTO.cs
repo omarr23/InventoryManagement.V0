@@ -19,9 +19,6 @@ namespace InventoryManagement.BLL.DTO.InventoryProductDTO
 
     public class CreateInventoryProductDTO
     {
-        [Required(ErrorMessage = "InventoryId is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "InventoryId must be a positive number.")]
-        public int InventoryId { get; set; }
         [Required(ErrorMessage = "ProductId is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
         public int ProductId { get; set; }

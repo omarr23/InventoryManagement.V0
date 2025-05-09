@@ -12,8 +12,10 @@ public class Product
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+
     //navigation properties
     public ICollection<InventoryProduct> InventoryProducts { get; set; } = new List<InventoryProduct>();
     public ICollection<SupplierProduct> SupplierProducts { get; set; } = new List<SupplierProduct>();
-
 }

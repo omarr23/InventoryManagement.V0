@@ -44,8 +44,13 @@ namespace InventoryManagement.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _inventoryService.AddAsync(createInventoryDTO);
-            return CreatedAtAction(nameof(GetById), new { id = createInventoryDTO.OwnerId }, createInventoryDTO);
+            // Get the current user's ID
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not authenticated");
+
+            var createdInventory = await _inventoryService.AddAsync(createInventoryDTO, userId);
+            return CreatedAtAction(nameof(GetById), new { id = createdInventory.InventoryId }, createdInventory);
         }
 
         // PUT: api/Inventory/{id}

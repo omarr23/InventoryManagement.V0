@@ -13,7 +13,7 @@ namespace InventoryManagement.BLL.manager.InventoryService
     {
         Task<IEnumerable<InventoryDTO.InventoryReadDTO>> GetAllAsync();
         Task<InventoryDTO.InventoryReadDTO?> GetByIdAsync(int id);
-        Task AddAsync(InventoryDTO.CreateInventoryDTO dto);
+        Task<InventoryDTO.InventoryReadDTO> AddAsync(InventoryDTO.CreateInventoryDTO dto, string userId);
         Task UpdateAsync(int id, InventoryDTO.UpdateInventoryDTO dto);
         Task DeleteAsync(int id);
 

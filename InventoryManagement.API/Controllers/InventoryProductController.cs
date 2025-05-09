@@ -37,19 +37,18 @@ namespace InventoryManagement.API.Controllers
         }
 
         // POST: api/InventoryProduct
-        [HttpPost]
-        public async Task<ActionResult> Create([FromBody] CreateInventoryProductDTO dto)
+        [HttpPost("{inventoryId}")]
+        public async Task<ActionResult> Create(int inventoryId, [FromBody] CreateInventoryProductDTO dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState); // If the model is invalid, return a bad request with validation errors
             }
 
-            // Assuming InventoryId is generated automatically or fetched from the database
-            await _service.AddAsync(dto); // The service method should handle InventoryId
+            await _service.AddAsync(dto, inventoryId);
 
             // Modify CreatedAtAction to include both inventoryId and productId
-            return CreatedAtAction(nameof(GetById), new { inventoryId = dto.InventoryId, productId = dto.ProductId }, dto);
+            return CreatedAtAction(nameof(GetById), new { inventoryId = inventoryId, productId = dto.ProductId }, dto);
         }
         // PUT: api/InventoryProduct/{inventoryId}/{productId}
         [HttpPut("{inventoryId}/{productId}")]

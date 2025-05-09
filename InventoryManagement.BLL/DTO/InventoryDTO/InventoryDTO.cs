@@ -16,7 +16,7 @@ namespace InventoryManagement.BLL.DTO.InventoryDTO
         {
             public int InventoryId { get; set; }
             public string OwnerType { get; set; }
-            public int OwnerId { get; set; }
+            public string OwnerId { get; set; }
             public string Name { get; set; }
             public bool IsPublic { get; set; }
             public DateTime CreatedAt { get; set; }
@@ -32,9 +32,7 @@ namespace InventoryManagement.BLL.DTO.InventoryDTO
             [RegularExpression("^(USER|COMPANY)$", ErrorMessage = "OwnerType must be either 'USER' or 'COMPANY'.")]
             public string OwnerType { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "OwnerId is required.")]
-            [Range(1, int.MaxValue, ErrorMessage = "OwnerId must be a positive number.")]
-            public int OwnerId { get; set; }
+            
 
             [Required(ErrorMessage = "Name is required.")]
             [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters.")]
@@ -58,8 +56,7 @@ namespace InventoryManagement.BLL.DTO.InventoryDTO
             public string OwnerType { get; set; } = string.Empty;
 
             [Required(ErrorMessage = "OwnerId is required.")]
-            [Range(1, int.MaxValue, ErrorMessage = "OwnerId must be a positive number.")]
-            public int OwnerId { get; set; }
+            public string OwnerId { get; set; } = string.Empty;
 
             [Required(ErrorMessage = "Name is required.")]
             [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters.")]
