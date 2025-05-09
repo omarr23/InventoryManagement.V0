@@ -30,6 +30,8 @@ using InventoryManagement.DAL.Repository.SupplierProductRepository;
 using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL.Repository.InventoryProductRepository;
 using InventoryManagement.API.Middleware;
+using Microsoft.Extensions.Caching.Memory;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,7 +101,7 @@ builder.Services.AddScoped<ISupplierProductService, SupplierProductService>();
 builder.Services.AddScoped<ISupplierProductRepository, SupplierProductRepository>();
 builder.Services.AddScoped<IInventoryProductRepository, InventoryProductRepository>();
 builder.Services.AddScoped<IInventoryProductService, InventoryProductService>();
-
+builder.Services.AddMemoryCache();
 // =============================================
 //  4. MVC + Swagger + JWT Bearer Auto-Prepend
 // =============================================

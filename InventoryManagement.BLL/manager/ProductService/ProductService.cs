@@ -3,23 +3,38 @@ using InventoryManagement.DAL.Interfaces;
 using InventoryManagement.BLL.DTO.ProductDTO;
 using InventoryManagement.BLL.Mappers;
 using InventoryManagement.DAL.Repository.ProductRepository;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace InventoryManagement.BLL.manager.ProductService
 {
     public class ProductService : IProductService
     {
         private readonly IProductRepository _repository;
+        private readonly IMemoryCache _cache;
 
-        public ProductService(IProductRepository repository)
+        public ProductService(IProductRepository repository, IMemoryCache cache)
         {
             _repository = repository;
+            _cache = cache;
         }
 
-        public async Task<IEnumerable<ProductDTO.ProductReadDTO>> GetAllAsync()
-        {
-            var products = await _repository.GetAllAsync();
-            return products.Select(ProductMapper.MapToProductReadDto);
-        }
+       public async Task<IEnumerable<ProductDTO.ProductReadDTO>> GetAllAsync()
+{
+    const string cacheKey = "products_all";
+
+    if (!_cache.TryGetValue(cacheKey, out IEnumerable<ProductDTO.ProductReadDTO>? cachedProducts))
+    {
+        var products = await _repository.GetAllAsync();
+        cachedProducts = products.Select(ProductMapper.MapToProductReadDto).ToList();
+
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+        _cache.Set(cacheKey, cachedProducts, cacheEntryOptions);
+    }
+
+    return cachedProducts!;
+}
 
         public async Task<ProductDTO.ProductReadDTO?> GetByIdAsync(int id)
         {
