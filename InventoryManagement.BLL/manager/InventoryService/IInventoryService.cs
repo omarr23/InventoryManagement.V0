@@ -6,16 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static InventoryManagement.BLL.DTO.InventoryDTO.InventoryDTO;
+using InventoryManagement.BLL.Helper;
 
 namespace InventoryManagement.BLL.manager.InventoryService
 {
     public interface IInventoryService
     {
-        Task<IEnumerable<InventoryDTO.InventoryReadDTO>> GetAllAsync();
-        Task<InventoryDTO.InventoryReadDTO?> GetByIdAsync(int id);
-        Task<InventoryDTO.InventoryReadDTO> AddAsync(InventoryDTO.CreateInventoryDTO dto, string userId);
-        Task UpdateAsync(int id, InventoryDTO.UpdateInventoryDTO dto);
-        Task DeleteAsync(int id);
+        Task<Result<IEnumerable<InventoryReadDTO>>> GetAllAsync();
+        Task<Result<InventoryReadDTO?>> GetByIdAsync(int id);
+        Task<Result<InventoryReadDTO>> AddAsync(CreateInventoryDTO dto, string userId);
+        Task<Result<bool>> UpdateAsync(int id, UpdateInventoryDTO dto);
+        Task<Result<bool>> DeleteAsync(int id);
 
         //to add own services
     }

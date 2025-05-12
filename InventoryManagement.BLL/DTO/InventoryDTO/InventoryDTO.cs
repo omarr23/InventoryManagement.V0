@@ -28,38 +28,36 @@ namespace InventoryManagement.BLL.DTO.InventoryDTO
         //CREATE
         public class CreateInventoryDTO
         {
-            [Required(ErrorMessage = "OwnerType is required.")]
-            [RegularExpression("^(USER|COMPANY)$", ErrorMessage = "OwnerType must be either 'USER' or 'COMPANY'.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [RegularExpression("^(USER|COMPANY)$", ErrorMessage = "{0} must be either 'USER' or 'COMPANY'.")]
             public string OwnerType { get; set; } = string.Empty;
 
-            
-
-            [Required(ErrorMessage = "Name is required.")]
-            [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} must be between {2} and {1} characters.")]
             public string Name { get; set; } = string.Empty;
 
             public bool IsPublic { get; set; } = false;
 
             public List<CreateInventoryProductDTO> InventoryProducts { get; set; } = new();
-
         }
+
 
         //UPDATE
         public class UpdateInventoryDTO
         {
-            [Required(ErrorMessage = "InventoryId is required.")]
-            [Range(1, int.MaxValue, ErrorMessage = "InventoryId must be a positive number.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
             public int InventoryId { get; set; }
 
-            [Required(ErrorMessage = "OwnerType is required.")]
-            [RegularExpression("^(USER|COMPANY)$", ErrorMessage = "OwnerType must be either 'USER' or 'COMPANY'.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [RegularExpression("^(USER|COMPANY)$", ErrorMessage = "{0} must be either 'USER' or 'COMPANY'.")]
             public string OwnerType { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "OwnerId is required.")]
+            [Required(ErrorMessage = "{0} is required.")]
             public string OwnerId { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Name is required.")]
-            [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} must be between {2} and {1} characters.")]
             public string Name { get; set; } = string.Empty;
 
             public bool IsPublic { get; set; } = false;

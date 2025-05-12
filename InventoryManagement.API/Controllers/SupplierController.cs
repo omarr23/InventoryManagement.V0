@@ -5,12 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using static InventoryManagement.BLL.DTO.SupplierDTO.SupplierDTO;
 using Microsoft.AspNetCore.Authorization;
 
-
 namespace InventoryManagement.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // Uncomment if you want to require authentication for this controller
+    [Authorize] // Uncomment if needed
     public class SupplierController : ControllerBase
     {
         private readonly ISupplierService _service;
@@ -20,74 +19,62 @@ namespace InventoryManagement.API.Controllers
             _service = service;
         }
 
-        // Get all suppliers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var suppliers = await _service.GetAllAsync();
-            return Ok(suppliers);
+            var result = await _service.GetAllAsync();
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Value);
         }
 
-        // Get supplier by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var supplier = await _service.GetByIdAsync(id);
-            if (supplier == null)
-                return NotFound();
-            return Ok(supplier);
+            var result = await _service.GetByIdAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Value);
         }
 
-        // Add a new supplier
-        [HttpPost]
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] SupplierCreateDTO dto)
         {
             if (dto == null)
                 return BadRequest("Invalid supplier data.");
 
-            // Add the supplier
-            await _service.AddAsync(dto);
+            var result = await _service.AddAsync(dto);
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
 
-            // Now, fetch the supplier by ID that was created by the database
-            var suppliers = await _service.GetAllAsync();
-            var createdSupplier = suppliers.LastOrDefault(); // Assuming it's the last supplier added
-
-            if (createdSupplier == null)
-                return NotFound();
-
-            return CreatedAtAction(nameof(GetById), new { id = createdSupplier.SupplierId }, createdSupplier);
+            return CreatedAtAction(nameof(GetById), new { id = result.Value.SupplierId }, result.Value);
         }
 
-
-
-        // Update an existing supplier
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] SupplierUpdateDTO dto)
         {
             if (dto == null || id != dto.SupplierId)
                 return BadRequest("ID mismatch.");
 
-            var supplier = await _service.GetByIdAsync(id);
-            if (supplier == null)
-                return NotFound();
+            var result = await _service.UpdateAsync(id, dto);
+            if (!result.IsSuccess)
+                return NotFound(result.ErrorMessage);
 
-            await _service.UpdateAsync(id, dto);
             return NoContent();
         }
 
-        // Delete a supplier
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var supplier = await _service.GetByIdAsync(id);
-            if (supplier == null)
-                return NotFound();
+            var result = await _service.DeleteAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(result.ErrorMessage);
 
-            await _service.DeleteAsync(id);
             return NoContent();
         }
     }
-}
 
+
+}

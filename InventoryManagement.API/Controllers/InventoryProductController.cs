@@ -23,7 +23,10 @@ namespace InventoryManagement.API.Controllers
         public async Task<ActionResult<IEnumerable<InventoryProductReadDTO>>> GetAll()
         {
             var result = await _service.GetAllAsync();
-            return Ok(result);
+            if (result.IsFailure)
+                return StatusCode(500, result.ErrorMessage);
+
+            return Ok(result.Value);
         }
 
         // GET: api/InventoryProduct/{inventoryId}/{productId}
@@ -31,9 +34,10 @@ namespace InventoryManagement.API.Controllers
         public async Task<ActionResult<InventoryProductReadDTO>> GetById(int inventoryId, int productId)
         {
             var result = await _service.GetByIdAsync(inventoryId, productId);
-            if (result == null)
-                return NotFound();
-            return Ok(result);
+            if (result.IsFailure)
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Value);
         }
 
         // POST: api/InventoryProduct
@@ -45,10 +49,14 @@ namespace InventoryManagement.API.Controllers
                 return BadRequest(ModelState); // If the model is invalid, return a bad request with validation errors
             }
 
-            await _service.AddAsync(dto, inventoryId);
+            var result = await _service.AddAsync(dto, inventoryId);
+            if (result.IsFailure)
+                return BadRequest(result.ErrorMessage);
 
             // Modify CreatedAtAction to include both inventoryId and productId
-            return CreatedAtAction(nameof(GetById), new { inventoryId = inventoryId, productId = dto.ProductId }, dto);
+            //return CreatedAtAction(nameof(GetById), new {inventoryId =inventoryId  ,productId = dto.ProductId }, dto);
+
+            return CreatedAtAction(nameof(GetById), new {productId = dto.ProductId }, dto);
         }
         // PUT: api/InventoryProduct/{inventoryId}/{productId}
         [HttpPut("{inventoryId}/{productId}")]
@@ -59,7 +67,10 @@ namespace InventoryManagement.API.Controllers
                 return BadRequest(ModelState); // If the model is invalid, return a bad request with validation errors
             }
 
-            await _service.UpdateAsync(inventoryId, productId, dto);
+            var result = await _service.UpdateAsync(inventoryId, productId, dto);
+            if (result.IsFailure)
+                return NotFound(result.ErrorMessage);
+
             return NoContent();
         }
 
@@ -67,7 +78,10 @@ namespace InventoryManagement.API.Controllers
         [HttpDelete("{inventoryId}/{productId}")]
         public async Task<ActionResult> Delete(int inventoryId, int productId)
         {
-            await _service.DeleteAsync(inventoryId, productId);
+            var result = await _service.DeleteAsync(inventoryId, productId);
+            if (result.IsFailure)
+                return NotFound(result.ErrorMessage);
+
             return NoContent();
         }
     }
