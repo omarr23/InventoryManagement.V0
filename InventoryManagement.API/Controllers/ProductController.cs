@@ -24,7 +24,7 @@ namespace InventoryManagement.API.Controllers
         {
             var result = await _service.GetPaginatedAsync(parameters);
             if (!result.IsSuccess)
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(result.Error);
 
             return Ok(result.Value);
         }
@@ -35,7 +35,7 @@ namespace InventoryManagement.API.Controllers
         {
             var result = await _service.GetAllAsync();
             if (!result.IsSuccess)
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(result.Error);
 
             return Ok(result.Value);
         }
@@ -46,7 +46,7 @@ namespace InventoryManagement.API.Controllers
         {
             var result = await _service.GetSoftDeletedAsync();
             if (!result.IsSuccess)
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(result.Error);
 
             return Ok(result.Value);
         }
@@ -57,7 +57,7 @@ namespace InventoryManagement.API.Controllers
         {
             var result = await _service.GetByIdAsync(id);
             if (!result.IsSuccess)
-                return NotFound(result.ErrorMessage);
+                return NotFound(result.Error);
 
             return Ok(result.Value);
         }
@@ -71,7 +71,7 @@ namespace InventoryManagement.API.Controllers
 
             var result = await _service.AddAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(result.Error);
 
             return CreatedAtAction(nameof(GetById), new { id = result.Value.ProductId }, result.Value);
         }
@@ -84,7 +84,7 @@ namespace InventoryManagement.API.Controllers
             {
                 var result = await _service.UpdateAsync(id, dto);
                 if (!result.IsSuccess)
-                    return NotFound(result.ErrorMessage);
+                    return NotFound(result.Error);
 
                 return NoContent();
             }
@@ -102,7 +102,7 @@ namespace InventoryManagement.API.Controllers
             {
                 var result = await _service.DeleteAsync(id);
                 if (!result.IsSuccess)
-                    return NotFound(result.ErrorMessage);
+                    return NotFound(result.Error);
 
                 return NoContent();
             }

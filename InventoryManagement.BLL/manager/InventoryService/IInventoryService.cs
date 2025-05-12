@@ -12,11 +12,11 @@ namespace InventoryManagement.BLL.manager.InventoryService
 {
     public interface IInventoryService
     {
-        Task<Result<IEnumerable<InventoryReadDTO>>> GetAllAsync();
-        Task<Result<InventoryReadDTO?>> GetByIdAsync(int id);
-        Task<Result<InventoryReadDTO>> AddAsync(CreateInventoryDTO dto, string userId);
-        Task<Result<bool>> UpdateAsync(int id, UpdateInventoryDTO dto);
-        Task<Result<bool>> DeleteAsync(int id);
+        Task<ResultT<IEnumerable<InventoryReadDTO>>> GetAllAsync();
+        Task<ResultT<InventoryReadDTO?>> GetByIdAsync(int id);
+        Task<ResultT<InventoryReadDTO>> AddAsync(CreateInventoryDTO dto, string userId);
+        Task<ResultT<bool>> UpdateAsync(int id, UpdateInventoryDTO dto);
+        Task<ResultT<bool>> DeleteAsync(int id);
 
         //to add own services
     }

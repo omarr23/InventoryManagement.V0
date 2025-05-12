@@ -25,7 +25,7 @@ namespace InventoryManagement.API.Controllers
         {
             var inventories = await _inventoryService.GetAllAsync();
             if (!inventories.IsSuccess)
-                return BadRequest(inventories.ErrorMessage);
+                return BadRequest(inventories.Error);
 
             return Ok(inventories.Value); // Return all inventories with products
         }
@@ -36,7 +36,7 @@ namespace InventoryManagement.API.Controllers
         {
             var inventory = await _inventoryService.GetByIdAsync(id);
             if (!inventory.IsSuccess)
-                return NotFound(inventory.ErrorMessage);
+                return NotFound(inventory.Error);
 
             return Ok(inventory.Value); // Return the inventory with products by ID
         }
@@ -55,7 +55,7 @@ namespace InventoryManagement.API.Controllers
 
             var createdInventory = await _inventoryService.AddAsync(createInventoryDTO, userId);
             if (!createdInventory.IsSuccess)
-                return BadRequest(createdInventory.ErrorMessage);
+                return BadRequest(createdInventory.Error);
 
             return CreatedAtAction(nameof(GetById), new { id = createdInventory.Value.InventoryId }, createdInventory.Value);
         }
@@ -70,7 +70,7 @@ namespace InventoryManagement.API.Controllers
             var result = await _inventoryService.UpdateAsync(id, updateInventoryDTO);
 
             if (!result.IsSuccess)
-                return NotFound(result.ErrorMessage);
+                return NotFound(result.Error);
 
             return NoContent(); // Return 204 No Content after successful update
         }
@@ -82,7 +82,7 @@ namespace InventoryManagement.API.Controllers
             var result = await _inventoryService.DeleteAsync(id);
 
             if (!result.IsSuccess)
-                return NotFound(result.ErrorMessage);
+                return NotFound(result.Error);
 
             return NoContent(); // Return 204 No Content after successful deletion
         }

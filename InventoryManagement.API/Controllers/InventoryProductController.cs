@@ -23,8 +23,8 @@ namespace InventoryManagement.API.Controllers
         public async Task<ActionResult<IEnumerable<InventoryProductReadDTO>>> GetAll()
         {
             var result = await _service.GetAllAsync();
-            if (result.IsFailure)
-                return StatusCode(500, result.ErrorMessage);
+            if (!result.IsSuccess)
+                return StatusCode(500, result.Error);
 
             return Ok(result.Value);
         }
@@ -34,15 +34,15 @@ namespace InventoryManagement.API.Controllers
         public async Task<ActionResult<InventoryProductReadDTO>> GetById(int inventoryId, int productId)
         {
             var result = await _service.GetByIdAsync(inventoryId, productId);
-            if (result.IsFailure)
-                return NotFound(result.ErrorMessage);
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
 
             return Ok(result.Value);
         }
 
         // POST: api/InventoryProduct
         [HttpPost("{inventoryId}")]
-        public async Task<ActionResult> Create(int inventoryId, [FromBody] CreateInventoryProductDTO dto)
+        public async Task<ActionResult> Add(int inventoryId, [FromBody] CreateInventoryProductDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -50,13 +50,13 @@ namespace InventoryManagement.API.Controllers
             }
 
             var result = await _service.AddAsync(dto, inventoryId);
-            if (result.IsFailure)
-                return BadRequest(result.ErrorMessage);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
 
             // Modify CreatedAtAction to include both inventoryId and productId
             //return CreatedAtAction(nameof(GetById), new {inventoryId =inventoryId  ,productId = dto.ProductId }, dto);
 
-            return CreatedAtAction(nameof(GetById), new {productId = dto.ProductId }, dto);
+            return CreatedAtAction(nameof(GetById), new { inventoryId = inventoryId, productId = dto.ProductId }, dto);
         }
         // PUT: api/InventoryProduct/{inventoryId}/{productId}
         [HttpPut("{inventoryId}/{productId}")]
@@ -68,8 +68,8 @@ namespace InventoryManagement.API.Controllers
             }
 
             var result = await _service.UpdateAsync(inventoryId, productId, dto);
-            if (result.IsFailure)
-                return NotFound(result.ErrorMessage);
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
 
             return NoContent();
         }
@@ -79,8 +79,8 @@ namespace InventoryManagement.API.Controllers
         public async Task<ActionResult> Delete(int inventoryId, int productId)
         {
             var result = await _service.DeleteAsync(inventoryId, productId);
-            if (result.IsFailure)
-                return NotFound(result.ErrorMessage);
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
 
             return NoContent();
         }

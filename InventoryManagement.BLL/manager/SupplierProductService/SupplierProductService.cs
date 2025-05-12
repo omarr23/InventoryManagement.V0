@@ -23,85 +23,92 @@ namespace InventoryManagement.BLL.manager.SupplierProductService
             _repository = repository;
         }
 
-        // Add new SupplierProduct
-        public async Task<Result<bool>> AddSupplierProductAsync(CreateSupplierProductDTO dto)
+        public async Task<ResultT<bool>> AddSupplierProductAsync(CreateSupplierProductDTO dto)
         {
             try
             {
-                // Check if the SupplierProduct already exists to prevent duplicates
                 var existing = await _repository.GetSupplierProductAsync(dto.SupplierId, dto.ProductId);
                 if (existing != null)
-                    return Result<bool>.Failure("This SupplierProduct relation already exists.");
+                    return ResultT<bool>.Failure(
+                        ErrorMassege.Failure("SupplierProduct.Exists", "This SupplierProduct relation already exists.")
+                    );
 
-                // Map DTO to entity and add it
                 var supplierProduct = SupplierProductMapper.MapToSupplierProductDto(dto);
                 await _repository.AddSupplierProductAsync(supplierProduct);
 
-                return Result<bool>.Success(true);
+                return ResultT<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure($"An error occurred while adding the SupplierProduct: {ex.Message}");
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("SupplierProduct.Add", $"An error occurred while adding the SupplierProduct: {ex.Message}")
+                );
             }
         }
 
-        // Get SupplierProduct by SupplierId and ProductId
-        public async Task<Result<SupplierProductReadDTO>> GetSupplierProductByIdAsync(int supplierId, int productId)
+        public async Task<ResultT<SupplierProductReadDTO>> GetSupplierProductByIdAsync(int supplierId, int productId)
         {
             try
             {
                 var supplierProduct = await _repository.GetSupplierProductAsync(supplierId, productId);
                 if (supplierProduct == null)
-                    return Result<SupplierProductReadDTO>.Failure("The SupplierProduct relation was not found.");
+                    return ResultT<SupplierProductReadDTO>.Failure(
+                        ErrorMassege.NotFound("SupplierProduct.NotFound", "The SupplierProduct relation was not found.")
+                    );
 
-                return Result<SupplierProductReadDTO>.Success(SupplierProductMapper.MapToSupplierProductReadDto(supplierProduct));
+                return ResultT<SupplierProductReadDTO>.Success(
+                    SupplierProductMapper.MapToSupplierProductReadDto(supplierProduct)
+                );
             }
             catch (Exception ex)
             {
-                return Result<SupplierProductReadDTO>.Failure($"An error occurred while retrieving the SupplierProduct: {ex.Message}");
+                return ResultT<SupplierProductReadDTO>.Failure(
+                    ErrorMassege.Failure("SupplierProduct.Get", $"An error occurred while retrieving the SupplierProduct: {ex.Message}")
+                );
             }
         }
 
-        // Update existing SupplierProduct
-        public async Task<Result<bool>> UpdateSupplierProductAsync(UpdateSupplierProductDTO dto)
+        public async Task<ResultT<bool>> UpdateSupplierProductAsync(UpdateSupplierProductDTO dto)
         {
             try
             {
-                var existingSupplierProduct = await _repository.GetSupplierProductAsync(dto.SupplierId, dto.ProductId);
-                if (existingSupplierProduct == null)
-                    return Result<bool>.Failure("The SupplierProduct to update does not exist.");
+                var existing = await _repository.GetSupplierProductAsync(dto.SupplierId, dto.ProductId);
+                if (existing == null)
+                    return ResultT<bool>.Failure(
+                        ErrorMassege.NotFound("SupplierProduct.NotFound", "The SupplierProduct to update does not exist.")
+                    );
 
-                // Map the DTO to update the existing entity
-                SupplierProductMapper.MapToExistingSupplierProduct(dto, existingSupplierProduct);
+                SupplierProductMapper.MapToExistingSupplierProduct(dto, existing);
+                await _repository.UpdateSupplierProductAsync(existing);
 
-                // Update the entity
-                await _repository.UpdateSupplierProductAsync(existingSupplierProduct);
-
-                return Result<bool>.Success(true);
+                return ResultT<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure($"An error occurred while updating the SupplierProduct: {ex.Message}");
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("SupplierProduct.Update", $"An error occurred while updating the SupplierProduct: {ex.Message}")
+                );
             }
         }
 
-        // Delete SupplierProduct by SupplierId and ProductId
-        public async Task<Result<bool>> DeleteSupplierProductAsync(int supplierId, int productId)
+        public async Task<ResultT<bool>> DeleteSupplierProductAsync(int supplierId, int productId)
         {
             try
             {
-                var existingSupplierProduct = await _repository.GetSupplierProductAsync(supplierId, productId);
-                if (existingSupplierProduct == null)
-                    return Result<bool>.Failure("The SupplierProduct to delete does not exist.");
+                var existing = await _repository.GetSupplierProductAsync(supplierId, productId);
+                if (existing == null)
+                    return ResultT<bool>.Failure(
+                        ErrorMassege.NotFound("SupplierProduct.NotFound", "The SupplierProduct to delete does not exist.")
+                    );
 
-                // Delete the entity
                 await _repository.DeleteSupplierProductAsync(supplierId, productId);
-
-                return Result<bool>.Success(true);
+                return ResultT<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure($"An error occurred while deleting the SupplierProduct: {ex.Message}");
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("SupplierProduct.Delete", $"An error occurred while deleting the SupplierProduct: {ex.Message}")
+                );
             }
         }
     }

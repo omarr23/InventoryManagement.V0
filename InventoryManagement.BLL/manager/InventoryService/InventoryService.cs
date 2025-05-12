@@ -25,26 +25,33 @@ namespace InventoryManagement.BLL.manager.InventoryService
         }
 
         // Get all Inventories with Inventory Products
-        public async Task<Result<IEnumerable<InventoryDTO.InventoryReadDTO>>> GetAllAsync()
+        public async Task<ResultT<IEnumerable<InventoryDTO.InventoryReadDTO>>> GetAllAsync()
         {
-            var inventories = await _repository.GetAllAsync();
-            var result = inventories.Select(inventory => InventoryMapper.MapToInventoryReadDto(inventory));
-            return Result<IEnumerable<InventoryReadDTO>>.Success(result);
+            try
+            {
+                var inventories = await _repository.GetAllAsync();
+                var result = inventories.Select(InventoryMapper.MapToInventoryReadDto);
+                return ResultT<IEnumerable<InventoryReadDTO>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<IEnumerable<InventoryReadDTO>>.Failure(ErrorMassege.Failure("Inventory.GetAll", $"Error retrieving inventories: {ex.Message}"));
+            }
         }
 
         // Get Inventory by ID with Inventory Products
-        public async Task<Result<InventoryDTO.InventoryReadDTO?>> GetByIdAsync(int id)
+        public async Task<ResultT<InventoryDTO.InventoryReadDTO?>> GetByIdAsync(int id)
         {
             var inventory = await _repository.GetByIdAsync(id);
             if (inventory == null)
-                return Result<InventoryReadDTO?>.Failure("Inventory not found.");
+                return ResultT<InventoryReadDTO?>.Failure(ErrorMassege.NotFound("Inventory.NotFound", $"Inventory with ID {id} not found."));
 
             var dto = InventoryMapper.MapToInventoryReadDto(inventory);
-            return Result<InventoryReadDTO?>.Success(dto); // Map entity to DTO with InventoryProducts
+            return ResultT<InventoryReadDTO?>.Success(dto); // Map entity to DTO with InventoryProducts
         }
 
         // Add a new Inventory with Inventory Products
-        public async Task<Result<InventoryDTO.InventoryReadDTO>> AddAsync(InventoryDTO.CreateInventoryDTO dto, string userId)
+        public async Task<ResultT<InventoryDTO.InventoryReadDTO>> AddAsync(InventoryDTO.CreateInventoryDTO dto, string userId)
         {
             try
             {
@@ -61,53 +68,73 @@ namespace InventoryManagement.BLL.manager.InventoryService
 
                 var reloaded = await _repository.GetByIdAsync(inventory.InventoryId);
                 if (reloaded == null)
-                    return Result<InventoryReadDTO>.Failure("Failed to reload inventory after creation.");
-
+                    return ResultT<InventoryReadDTO>.Failure(
+                                           ErrorMassege.Failure("Inventory.ReloadFailed", "Failed to reload inventory after creation.")
+                                       );
                 var resultDto = InventoryMapper.MapToInventoryReadDto(reloaded);
-                return Result<InventoryReadDTO>.Success(resultDto);
+                return ResultT<InventoryReadDTO>.Success(resultDto);
             }
             catch (Exception ex)
             {
-                return Result<InventoryReadDTO>.Failure("Error creating inventory: " + ex.Message);
+                return ResultT<InventoryReadDTO>.Failure(
+                                    ErrorMassege.Failure("Inventory.Create", $"Error creating inventory: {ex.Message}")
+                                );
             }
         }
 
             // Update an existing Inventory with Inventory Products
-            public async Task<Result<bool>> UpdateAsync(int id, InventoryDTO.UpdateInventoryDTO dto)
+            public async Task<ResultT<bool>> UpdateAsync(int id, InventoryDTO.UpdateInventoryDTO dto)
         {
             var inventory = await _repository.GetByIdAsync(id);
             if (inventory == null)
-                return Result<bool>.Failure($"Inventory with ID {id} not found.");
-
-            InventoryMapper.MapToExistingInventory(dto, inventory);
-
-            inventory.InventoryProducts.Clear();
-
-            var inventoryProducts = dto.InventoryProducts.Select(ip => new InventoryProduct
+                return ResultT<bool>.Failure(
+                                    ErrorMassege.NotFound("Inventory.NotFound", $"Inventory with ID {id} not found.")
+                                );
+            try
             {
-                ProductId = ip.ProductId,
-                Quantity = ip.Quantity
-            }).ToList();
+                InventoryMapper.MapToExistingInventory(dto, inventory);
+                inventory.InventoryProducts.Clear();
 
-            foreach (var ip in inventoryProducts)
-            {
-                inventory.InventoryProducts.Add(ip);
+                var inventoryProducts = dto.InventoryProducts.Select(ip => new InventoryProduct
+                {
+                    ProductId = ip.ProductId,
+                    Quantity = ip.Quantity
+                }).ToList();
+
+                foreach (var ip in inventoryProducts)
+                    inventory.InventoryProducts.Add(ip);
+
+                await _repository.SaveChangesAsync();
+                return ResultT<bool>.Success(true);
             }
-
-            await _repository.SaveChangesAsync();
-            return Result<bool>.Success(true);
+            catch (Exception ex)
+            {
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Inventory.Update", $"Error updating inventory: {ex.Message}")
+                );
+            }
         }
 
         // Delete an Inventory with its Inventory Products
-        public async Task<Result<bool>> DeleteAsync(int id)
+        public async Task<ResultT<bool>> DeleteAsync(int id)
         {
             var inventory = await _repository.GetByIdAsync(id);
             if (inventory == null)
-                return Result<bool>.Failure($"Inventory with ID {id} not found.");
-
-            _repository.Delete(inventory);
-            await _repository.SaveChangesAsync();
-            return Result<bool>.Success(true);
+                return ResultT<bool>.Failure(
+                                   ErrorMassege.NotFound("Inventory.NotFound", $"Inventory with ID {id} not found.")
+                               );
+            try
+            {
+                _repository.Delete(inventory);
+                await _repository.SaveChangesAsync();
+                return ResultT<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Inventory.Delete", $"Error deleting inventory: {ex.Message}")
+                );
+            }
         }
     }
 }

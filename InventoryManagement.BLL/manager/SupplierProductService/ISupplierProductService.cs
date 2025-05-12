@@ -15,15 +15,15 @@ namespace InventoryManagement.BLL.manager.SupplierProductService
     public interface ISupplierProductService
     {
         // Add a new SupplierProduct
-        Task<Result<bool>> AddSupplierProductAsync(CreateSupplierProductDTO dto);
+        Task<ResultT<bool>> AddSupplierProductAsync(CreateSupplierProductDTO dto);
 
         // Get SupplierProduct by SupplierId and ProductId
-        Task<Result<SupplierProductReadDTO>> GetSupplierProductByIdAsync(int supplierId, int productId);
+        Task<ResultT<SupplierProductReadDTO>> GetSupplierProductByIdAsync(int supplierId, int productId);
 
         // Update an existing SupplierProduct
-        Task<Result<bool>> UpdateSupplierProductAsync(UpdateSupplierProductDTO dto);
+        Task<ResultT<bool>> UpdateSupplierProductAsync(UpdateSupplierProductDTO dto);
 
         // Delete SupplierProduct by SupplierId and ProductId
-        Task<Result<bool>> DeleteSupplierProductAsync(int supplierId, int productId);
+        Task<ResultT<bool>> DeleteSupplierProductAsync(int supplierId, int productId);
     }
 }

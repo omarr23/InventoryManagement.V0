@@ -28,8 +28,13 @@ namespace InventoryManagement.API.Middleware
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception occurred");
-
+                if (context.Response.HasStarted)
+                {
+                    _logger.LogWarning("The response has already started, cannot modify the response.");
+                    throw; 
+                }
                 var response = context.Response;
+                response.Clear();
                 response.ContentType = "application/json";
 
                 var errorResponse = new

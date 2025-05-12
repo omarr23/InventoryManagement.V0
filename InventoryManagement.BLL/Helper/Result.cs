@@ -3,26 +3,38 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace InventoryManagement.BLL.Helper
 {
-    public class Result <T>
+    public class Result
     {
-        public bool IsSuccess { get; private set; }
-        public string ErrorMessage { get;private set; }
-        public T Value { get;private set; }
-
-        public bool IsFailure => !IsSuccess;
-        private Result(bool isSuccess, string errorMessage, T value )
+        protected Result()
         {
-            IsSuccess = isSuccess;
-            ErrorMessage = errorMessage ?? string.Empty; ;
-            Value = value;
+            IsSuccess = true;
+            Error = default;
         }
-        public static Result<T> Success(T value) => new Result<T>(true, null, value);
-        public static Result<T> Failure(string errorMessage) => new Result<T>(false, errorMessage, default);
-        public override string ToString() => IsSuccess ? $"Success: {Value}" : $"Failure: {ErrorMessage}";
 
+        protected Result(ErrorMassege error)
+        {
+            IsSuccess = false;
+            Error = error;
+        }
+
+        public bool IsSuccess { get; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public ErrorMassege? Error { get; }
+
+        public static implicit operator Result(ErrorMassege error) =>
+            new(error);
+
+        public static Result Success() =>
+            new();
+
+        public static Result Failure(ErrorMassege error) =>
+            new(error);
     }
+
 }

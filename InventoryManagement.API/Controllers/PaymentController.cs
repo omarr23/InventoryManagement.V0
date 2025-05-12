@@ -26,7 +26,7 @@ namespace InventoryManagement.API.Controllers
             var result = await _paymentService.GetAllPaymentsAsync();
 
             if (!result.IsSuccess)
-                return BadRequest(new { message = result.ErrorMessage });
+                return BadRequest(new { message = result.Error });
 
             return Ok(result.Value);
         }
@@ -38,7 +38,7 @@ namespace InventoryManagement.API.Controllers
             var result = await _paymentService.GetPaymentByIdAsync(id);
 
             if (!result.IsSuccess)
-                return NotFound(new { message = result.ErrorMessage });
+                return NotFound(new { message = result.Error });
 
             if (result.Value == null)
                 return NotFound(new { message = "Payment not found." });
@@ -56,7 +56,7 @@ namespace InventoryManagement.API.Controllers
             var result = await _paymentService.CreatePaymentAsync(dto);
 
             if (!result.IsSuccess)
-                return BadRequest(new { message = result.ErrorMessage });
+                return BadRequest(new { message = result.Error });
 
             return CreatedAtAction(nameof(GetPaymentById), new { id = result.Value.PaymentId }, result.Value);
         }
@@ -71,7 +71,7 @@ namespace InventoryManagement.API.Controllers
             var result = await _paymentService.UpdatePaymentAsync(id, dto);
 
             if (!result.IsSuccess)
-                return NotFound(new { message = result.ErrorMessage });
+                return NotFound(new { message = result.Error });
 
             return NoContent();
         }
@@ -83,7 +83,7 @@ namespace InventoryManagement.API.Controllers
             var result = await _paymentService.DeletePaymentAsync(id);
 
             if (!result.IsSuccess)
-                return NotFound(new { message = result.ErrorMessage });
+                return NotFound(new { message = result.Error });
 
             return NoContent();
         }

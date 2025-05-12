@@ -18,38 +18,44 @@ namespace InventoryManagement.BLL.manager.SupplierService
             _repository = repository;
         }
 
-        public async Task<Result<IEnumerable<SupplierReadDTO>>> GetAllAsync()
+        public async Task<ResultT<IEnumerable<SupplierReadDTO>>> GetAllAsync()
         {
             try
             {
                 var suppliers = await _repository.GetAllAsync();
                 var mapped = suppliers.Select(SupplierMapper.MapToSupplierReadDto);
-                return Result<IEnumerable<SupplierReadDTO>>.Success(mapped);
+                return ResultT<IEnumerable<SupplierReadDTO>>.Success(mapped);
             }
             catch (Exception ex)
             {
-                return Result<IEnumerable<SupplierReadDTO>>.Failure($"Error retrieving suppliers: {ex.Message}");
+                return ResultT<IEnumerable<SupplierReadDTO>>.Failure(
+                    ErrorMassege.Failure("Supplier.GetAll", $"Error retrieving suppliers: {ex.Message}")
+                );
             }
         }
 
-        public async Task<Result<SupplierReadDTO?>> GetByIdAsync(int id)
+        public async Task<ResultT<SupplierReadDTO?>> GetByIdAsync(int id)
         {
             try
             {
                 var supplier = await _repository.GetByIdAsync(id);
                 if (supplier == null)
-                    return Result<SupplierReadDTO?>.Failure($"Supplier with ID {id} not found.");
+                    return ResultT<SupplierReadDTO?>.Failure(
+                        ErrorMassege.NotFound("Supplier.NotFound", $"Supplier with ID {id} not found.")
+                    );
 
                 var mapped = SupplierMapper.MapToSupplierReadDto(supplier);
-                return Result<SupplierReadDTO?>.Success(mapped);
+                return ResultT<SupplierReadDTO?>.Success(mapped);
             }
             catch (Exception ex)
             {
-                return Result<SupplierReadDTO?>.Failure($"Error retrieving supplier: {ex.Message}");
+                return ResultT<SupplierReadDTO?>.Failure(
+                    ErrorMassege.Failure("Supplier.GetById", $"Error retrieving supplier: {ex.Message}")
+                );
             }
         }
 
-        public async Task<Result<SupplierReadDTO>> AddAsync(SupplierCreateDTO dto)
+        public async Task<ResultT<SupplierReadDTO>> AddAsync(SupplierCreateDTO dto)
         {
             try
             {
@@ -58,47 +64,57 @@ namespace InventoryManagement.BLL.manager.SupplierService
                 await _repository.SaveChangesAsync();
 
                 var mapped = SupplierMapper.MapToSupplierReadDto(supplier);
-                return Result<SupplierReadDTO>.Success(mapped);
+                return ResultT<SupplierReadDTO>.Success(mapped);
             }
             catch (Exception ex)
             {
-                return Result<SupplierReadDTO>.Failure($"Error adding supplier: {ex.Message}");
+                return ResultT<SupplierReadDTO>.Failure(
+                    ErrorMassege.Failure("Supplier.Add", $"Error adding supplier: {ex.Message}")
+                );
             }
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, SupplierUpdateDTO dto)
+        public async Task<ResultT<bool>> UpdateAsync(int id, SupplierUpdateDTO dto)
         {
             try
             {
                 var supplier = await _repository.GetByIdAsync(id);
                 if (supplier == null)
-                    return Result<bool>.Failure($"Supplier with ID {id} not found.");
+                    return ResultT<bool>.Failure(
+                        ErrorMassege.NotFound("Supplier.NotFound", $"Supplier with ID {id} not found.")
+                    );
 
                 SupplierMapper.MapToExistingSupplier(dto, supplier);
                 await _repository.SaveChangesAsync();
-                return Result<bool>.Success(true);
+                return ResultT<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure($"Error updating supplier: {ex.Message}");
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Supplier.Update", $"Error updating supplier: {ex.Message}")
+                );
             }
         }
 
-        public async Task<Result<bool>> DeleteAsync(int id)
+        public async Task<ResultT<bool>> DeleteAsync(int id)
         {
             try
             {
                 var supplier = await _repository.GetByIdAsync(id);
                 if (supplier == null)
-                    return Result<bool>.Failure($"Supplier with ID {id} not found.");
+                    return ResultT<bool>.Failure(
+                        ErrorMassege.NotFound("Supplier.NotFound", $"Supplier with ID {id} not found.")
+                    );
 
                 _repository.Delete(supplier);
                 await _repository.SaveChangesAsync();
-                return Result<bool>.Success(true);
+                return ResultT<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                return Result<bool>.Failure($"Error deleting supplier: {ex.Message}");
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Supplier.Delete", $"Error deleting supplier: {ex.Message}")
+                );
             }
         }
     }
