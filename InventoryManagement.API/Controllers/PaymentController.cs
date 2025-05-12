@@ -4,6 +4,7 @@ using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
 namespace InventoryManagement.API.Controllers
 {using Microsoft.AspNetCore.Authorization;
+    using static InventoryManagement.BLL.DTO.PaymentDTO.PaymentDTO;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -17,45 +18,62 @@ namespace InventoryManagement.API.Controllers
             _paymentService = paymentService;
         }
 
+
         // Get all payments
         [HttpGet]
         public async Task<IActionResult> GetAllPayments()
         {
-            var payments = await _paymentService.GetAllPaymentsAsync();
-            return Ok(payments);
+            var result = await _paymentService.GetAllPaymentsAsync();
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return Ok(result.Value);
         }
 
         // Get payment by id
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPaymentById(int id)
         {
-            var payment = await _paymentService.GetPaymentByIdAsync(id);
-            if (payment == null)
-                return NotFound();
+            var result = await _paymentService.GetPaymentByIdAsync(id);
 
-            return Ok(payment);
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
+            if (result.Value == null)
+                return NotFound(new { message = "Payment not found." });
+
+            return Ok(result.Value);
         }
 
         // Create new payment
         [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentDTO.CreatePaymentDto dto)
+        public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdPayment = await _paymentService.CreatePaymentAsync(dto);
-            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment.PaymentId }, createdPayment);
+            var result = await _paymentService.CreatePaymentAsync(dto);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.ErrorMessage });
+
+            return CreatedAtAction(nameof(GetPaymentById), new { id = result.Value.PaymentId }, result.Value);
         }
 
         // Update payment
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePayment(int id, [FromBody] PaymentDTO.UpdatePaymentDto dto)
+        public async Task<IActionResult> UpdatePayment(int id, [FromBody] UpdatePaymentDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var result = await _paymentService.UpdatePaymentAsync(id, dto);
-            return result ? NoContent() : NotFound();
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
+            return NoContent();
         }
 
         // Delete payment
@@ -63,7 +81,11 @@ namespace InventoryManagement.API.Controllers
         public async Task<IActionResult> DeletePayment(int id)
         {
             var result = await _paymentService.DeletePaymentAsync(id);
-            return result ? NoContent() : NotFound();
+
+            if (!result.IsSuccess)
+                return NotFound(new { message = result.ErrorMessage });
+
+            return NoContent();
         }
     }
 

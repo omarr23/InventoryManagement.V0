@@ -8,21 +8,22 @@ using System.Text;
 using InventoryManagement.DAL.Interfaces;
 using System.Threading.Tasks;
 using static InventoryManagement.BLL.DTO.SupplierProductDTO.SupplierPrpductDTO;
+using InventoryManagement.BLL.Helper;
 
 namespace InventoryManagement.BLL.manager.SupplierProductService
 {
     public interface ISupplierProductService
     {
         // Add a new SupplierProduct
-        Task AddSupplierProductAsync(CreateSupplierProductDTO dto);
+        Task<Result<bool>> AddSupplierProductAsync(CreateSupplierProductDTO dto);
 
         // Get SupplierProduct by SupplierId and ProductId
-        Task<SupplierProductReadDTO> GetSupplierProductByIdAsync(int supplierId, int productId);
+        Task<Result<SupplierProductReadDTO>> GetSupplierProductByIdAsync(int supplierId, int productId);
 
         // Update an existing SupplierProduct
-        Task UpdateSupplierProductAsync(UpdateSupplierProductDTO dto);
+        Task<Result<bool>> UpdateSupplierProductAsync(UpdateSupplierProductDTO dto);
 
         // Delete SupplierProduct by SupplierId and ProductId
-        Task DeleteSupplierProductAsync(int supplierId, int productId);
+        Task<Result<bool>> DeleteSupplierProductAsync(int supplierId, int productId);
     }
 }

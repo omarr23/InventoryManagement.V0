@@ -12,21 +12,21 @@ namespace InventoryManagement.BLL.DTO.PaymentDTO
 
         public class CreatePaymentDto
         {
-                [Required]
+                [Required(ErrorMessage ="{0} is Required")]
                 public int UserId { get; set; }
 
-                [Required]
-                [Range(0.01, 999999999.99)]
+                [Required(ErrorMessage = "{0} is Required")]
+                [Range(1, 1000000, ErrorMessage = "{0} must be between {1} and {2}.")]
                 public decimal Amount { get; set; }
 
-                [Required]
+                [Required(ErrorMessage = "{0} is Required")]
                 public DateTime PaymentDate { get; set; }
 
-                [Required]
-                [StringLength(50)]
+                [Required(ErrorMessage = "{0} is Required")]
+                [StringLength(50,ErrorMessage = "{0} must be less than {1} character")]
                 public string PaymentMethod { get; set; } = string.Empty;
 
-                [StringLength(20)]
+                [StringLength(20, ErrorMessage = "{0} must be less than {1} character")]
                 public string Status { get; set; } = "PENDING";
 
                 public string? StripePaymentIntentId { get; set; }
@@ -35,22 +35,22 @@ namespace InventoryManagement.BLL.DTO.PaymentDTO
         }
         public class UpdatePaymentDto
         {
-            [Required]
+            [Required(ErrorMessage = "{0} is Required")]
             public int UserId { get; set; }
 
-            [Required]
-            [Range(0.01, 999999999.99)]
+            [Required(ErrorMessage = "{0} is Required")]
+            [Range(1, 1000000, ErrorMessage = "{0} must be between {1} and {2}.")]
             public decimal Amount { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "{0} is Required")]
             public DateTime PaymentDate { get; set; }
 
-            [Required]
-            [StringLength(50)]
+            [Required(ErrorMessage = "{0} is Required")]
+            [StringLength(50, ErrorMessage = "{0} must be less than {1} character")]
             public string PaymentMethod { get; set; } = string.Empty;
 
-            [Required]
-            [StringLength(20)]
+            [Required(ErrorMessage = "{0} is Required")]
+            [StringLength(20, ErrorMessage = "{0} must be less than {1} character")]
             public string Status { get; set; } = "PENDING";
 
             public string? StripePaymentIntentId { get; set; }
