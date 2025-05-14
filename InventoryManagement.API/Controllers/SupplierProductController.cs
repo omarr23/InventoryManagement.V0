@@ -27,7 +27,7 @@ namespace InventoryManagement.API.Controllers
 
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage);  // Handle already existing relation or other errors
+                return BadRequest(result.Error);  // Handle already existing relation or other errors
             }
 
             return CreatedAtRoute(
@@ -47,7 +47,7 @@ namespace InventoryManagement.API.Controllers
                 return Ok(result.Value);
             }
 
-            return NotFound(result.ErrorMessage);
+            return NotFound(result.Error);
         }
 
         // PUT api/supplierproduct
@@ -58,7 +58,7 @@ namespace InventoryManagement.API.Controllers
 
             if (!result.IsSuccess)
             {
-                return NotFound(result.ErrorMessage);  // Handle not found exception
+                return NotFound(result.Error);  // Handle not found exception
             }
 
             return NoContent();  // Return no content if the update is successful
@@ -72,7 +72,7 @@ namespace InventoryManagement.API.Controllers
 
             if (!result.IsSuccess)
             {
-                return NotFound(result.ErrorMessage);  // Handle not found exception
+                return NotFound(result.Error);  // Handle not found exception
             }
 
             return NoContent();  // Return no content if the delete is successful

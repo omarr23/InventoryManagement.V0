@@ -1,151 +1,148 @@
-﻿using InventoryManagement.DAL.Models;
-using InventoryManagement.DAL.Interfaces;
-using InventoryManagement.BLL.DTO.ProductDTO;
+﻿using InventoryManagement.BLL.DTO.ProductDTO;
+using InventoryManagement.BLL.Helper;
+using InventoryManagement.BLL.manager.ProductService;
 using InventoryManagement.BLL.Mappers;
 using InventoryManagement.DAL.Repository.ProductRepository;
 using Microsoft.Extensions.Caching.Memory;
-using InventoryManagement.BLL.Helper;
 using static InventoryManagement.BLL.DTO.ProductDTO.ProductDTO;
 
-namespace InventoryManagement.BLL.manager.ProductService
+public class ProductService : IProductService
 {
-    public class ProductService : IProductService
+    private readonly IProductRepository _repository;
+    private readonly IMemoryCache _cache;
+
+    public ProductService(IProductRepository repository, IMemoryCache cache)
     {
-        private readonly IProductRepository _repository;
-        private readonly IMemoryCache _cache;
+        _repository = repository;
+        _cache = cache;
+    }
 
-        public ProductService(IProductRepository repository, IMemoryCache cache)
-        {
-            _repository = repository;
-            _cache = cache;
-        }
+    public async Task<ResultT<IEnumerable<ProductReadDTO>>> GetAllAsync()
+    {
+        const string cacheKey = "products_all";
 
-        public async Task<Result<IEnumerable<ProductReadDTO>>> GetAllAsync()
-        {
-            const string cacheKey = "products_all";
-
-            if (!_cache.TryGetValue(cacheKey, out IEnumerable<ProductReadDTO>? cachedProducts))
-            {
-                try
-                {
-                    var products = await _repository.GetAllAsync();
-                    cachedProducts = products.Select(ProductMapper.MapToProductReadDto).ToList();
-
-                    var cacheEntryOptions = new MemoryCacheEntryOptions()
-                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
-
-                    _cache.Set(cacheKey, cachedProducts, cacheEntryOptions);
-                }
-                catch (Exception ex)
-                {
-                    return Result<IEnumerable<ProductReadDTO>>.Failure($"Error retrieving products: {ex.Message}");
-                }
-            }
-
-            return Result<IEnumerable<ProductReadDTO>>.Success(cachedProducts!);
-        }
-
-        public async Task<Result<ProductReadDTO?>> GetByIdAsync(int id)
+        if (!_cache.TryGetValue(cacheKey, out IEnumerable<ProductReadDTO>? cachedProducts))
         {
             try
             {
-                var product = await _repository.GetByIdAsync(id);
-                if (product == null)
-                    return Result<ProductReadDTO?>.Failure($"Product with ID {id} not found.");
+                var products = await _repository.GetAllAsync();
+                cachedProducts = products.Select(ProductMapper.MapToProductReadDto).ToList();
 
-                return Result<ProductReadDTO?>.Success(ProductMapper.MapToProductReadDto(product));
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+                _cache.Set(cacheKey, cachedProducts, cacheEntryOptions);
             }
             catch (Exception ex)
             {
-                return Result<ProductReadDTO?>.Failure($"Error retrieving product: {ex.Message}");
+                return ErrorMassege.Failure("Product.GetAll.Error", $"Error retrieving products: {ex.Message}");
             }
         }
 
-        public async Task<Result<ProductReadDTO>> AddAsync(ProductCreatDTO dto)
-        {
-            try
-            {
-                var product = ProductMapper.MapToProduct(dto);
-                await _repository.AddAsync(product);
-                await _repository.SaveChangesAsync();
+        return ResultT<IEnumerable<ProductReadDTO>>.Success(cachedProducts!);
+    }
 
-                return Result<ProductReadDTO>.Success(ProductMapper.MapToProductReadDto(product));
-            }
-            catch (Exception ex)
-            {
-                return Result<ProductReadDTO>.Failure($"Error adding product: {ex.Message}");
-            }
+    public async Task<ResultT<ProductReadDTO?>> GetByIdAsync(int id)
+    {
+        try
+        {
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null)
+                return ErrorMassege.NotFound("Product.NotFound", $"Product with ID {id} not found.");
+
+            return ResultT<ProductReadDTO?>.Success(ProductMapper.MapToProductReadDto(product));
         }
-
-        public async Task<Result<bool>> UpdateAsync(int id, ProductUpdateDTO dto)
+        catch (Exception ex)
         {
-            try
-            {
-                var product = await _repository.GetByIdAsync(id);
-                if (product == null)
-                    return Result<bool>.Failure($"Product with ID {id} not found.");
-
-                ProductMapper.MapToExistingProduct(dto, product);
-                await _repository.SaveChangesAsync();
-                return Result<bool>.Success(true);
-            }
-            catch (Exception ex)
-            {
-                return Result<bool>.Failure($"Error updating product: {ex.Message}");
-            }
+            return ErrorMassege.Failure("Product.GetById.Error", $"Error retrieving product: {ex.Message}");
         }
+    }
 
-        public async Task<Result<bool>> DeleteAsync(int id)
+    public async Task<ResultT<ProductReadDTO>> AddAsync(ProductCreatDTO dto)
+    {
+        try
         {
-            try
-            {
-                var product = await _repository.GetByIdAsync(id);
-                if (product == null)
-                    return Result<bool>.Failure($"Product with ID {id} not found.");
+            var product = ProductMapper.MapToProduct(dto);
+            await _repository.AddAsync(product);
+            await _repository.SaveChangesAsync();
 
-                _repository.Delete(product);
-                await _repository.SaveChangesAsync();
-                return Result<bool>.Success(true);
-            }
-            catch (Exception ex)
-            {
-                return Result<bool>.Failure($"Error deleting product: {ex.Message}");
-            }
+            return ResultT<ProductReadDTO>.Success(ProductMapper.MapToProductReadDto(product));
         }
-
-        public async Task<Result<PaginatedResult<ProductReadDTO>>> GetPaginatedAsync(PaginationParameters parameters)
+        catch (Exception ex)
         {
-            try
-            {
-                var (products, totalCount) = await _repository.GetPaginatedAsync(parameters.PageNumber, parameters.PageSize);
-                var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize);
-
-                return Result<PaginatedResult<ProductReadDTO>>.Success(new PaginatedResult<ProductReadDTO>
-                {
-                    Items = products.Select(ProductMapper.MapToProductReadDto),
-                    TotalCount = totalCount,
-                    PageNumber = parameters.PageNumber,
-                    PageSize = parameters.PageSize,
-                    TotalPages = totalPages
-                });
-            }
-            catch (Exception ex)
-            {
-                return Result<PaginatedResult<ProductReadDTO>>.Failure($"Error fetching paginated products: {ex.Message}");
-            }
+            return ErrorMassege.Failure("Product.Add.Error", $"Error adding product: {ex.Message}");
         }
+    }
 
-        public async Task<Result<IEnumerable<ProductReadDTO>>> GetSoftDeletedAsync()
+    public async Task<ResultT<bool>> UpdateAsync(int id, ProductUpdateDTO dto)
+    {
+        try
         {
-            try
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null)
+                return ErrorMassege.NotFound("Product.Update.NotFound", $"Product with ID {id} not found.");
+
+            ProductMapper.MapToExistingProduct(dto, product);
+            await _repository.SaveChangesAsync();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return ErrorMassege.Failure("Product.Update.Error", $"Error updating product: {ex.Message}");
+        }
+    }
+
+    public async Task<ResultT<bool>> DeleteAsync(int id)
+    {
+        try
+        {
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null)
+                return ErrorMassege.NotFound("Product.Delete.NotFound", $"Product with ID {id} not found.");
+
+            _repository.Delete(product);
+            await _repository.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return ErrorMassege.Failure("Product.Delete.Error", $"Error deleting product: {ex.Message}");
+        }
+    }
+
+    public async Task<ResultT<PaginatedResult<ProductReadDTO>>> GetPaginatedAsync(PaginationParameters parameters)
+    {
+        try
+        {
+            var (products, totalCount) = await _repository.GetPaginatedAsync(parameters.PageNumber, parameters.PageSize);
+            var totalPages = (int)Math.Ceiling(totalCount / (double)parameters.PageSize);
+
+            return new PaginatedResult<ProductReadDTO>
             {
-                var products = await _repository.GetSoftDeletedAsync();
-                return Result<IEnumerable<ProductReadDTO>>.Success(products.Select(ProductMapper.MapToProductReadDto));
-            }
-            catch (Exception ex)
-            {
-                return Result<IEnumerable<ProductReadDTO>>.Failure($"Error fetching soft-deleted products: {ex.Message}");
-            }
+                Items = products.Select(ProductMapper.MapToProductReadDto),
+                TotalCount = totalCount,
+                PageNumber = parameters.PageNumber,
+                PageSize = parameters.PageSize,
+                TotalPages = totalPages
+            };
+        }
+        catch (Exception ex)
+        {
+            return ErrorMassege.Failure("Product.Pagination.Error", $"Error fetching paginated products: {ex.Message}");
+        }
+    }
+
+    public async Task<ResultT<IEnumerable<ProductReadDTO>>> GetSoftDeletedAsync()
+    {
+        try
+        {
+            var products = await _repository.GetSoftDeletedAsync();
+            return products.Select(ProductMapper.MapToProductReadDto).ToList();
+        }
+        catch (Exception ex)
+        {
+            return ErrorMassege.Failure("Product.GetSoftDeleted.Error", $"Error fetching soft-deleted products: {ex.Message}");
         }
     }
 }
