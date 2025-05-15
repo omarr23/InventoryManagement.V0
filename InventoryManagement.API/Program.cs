@@ -31,6 +31,7 @@ using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL.Repository.InventoryProductRepository;
 using InventoryManagement.API.Middleware;
 using Microsoft.Extensions.Caching.Memory;
+using InventoryManagement.BLL.DTO.Common;
 
 
 var builder = WebApplication.CreateBuilder(args);

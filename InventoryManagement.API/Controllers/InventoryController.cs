@@ -9,6 +9,7 @@ namespace InventoryManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+//   [Authorize(Roles = "Admin, User, Manager")] 
     [Authorize]
     public class InventoryController : ControllerBase
     {

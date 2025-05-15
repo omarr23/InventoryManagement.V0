@@ -45,7 +45,7 @@ namespace InventoryManagement.DAL.Repository.ProductRepository
         {
             product.IsDeleted = true;
             product.DeletedAt = DateTime.UtcNow;
-            _context.Products.Update(product);
+            
         }
 
         public async Task SaveChangesAsync()
