@@ -21,30 +21,30 @@ namespace InventoryManagement.BLL.DTO.SupplierProductDTO
         }
         public class CreateSupplierProductDTO
         {
-            [Required(ErrorMessage = "SupplierId is required.")]
-            [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
             public int SupplierId { get; set; }
 
-            [Required(ErrorMessage = "ProductId is required.")]
-            [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
             public int ProductId { get; set; }
 
-            [Required(ErrorMessage = "DefaultCost is required.")]
-            [Range(0, double.MaxValue, ErrorMessage = "DefaultCost must be a positive number.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [Range(0, double.MaxValue, ErrorMessage = "{0} must be a positive number.")]
             public decimal? DefaultCost { get; set; }
         }
         public class UpdateSupplierProductDTO
         {
-            [Required(ErrorMessage = "SupplierId is required.")]
-            [Range(1, int.MaxValue, ErrorMessage = "SupplierId must be a positive number.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
             public int SupplierId { get; set; }
 
-            [Required(ErrorMessage = "ProductId is required.")]
-            [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
             public int ProductId { get; set; }
 
-            [Required(ErrorMessage = "DefaultCost is required.")]
-            [Range(0, double.MaxValue, ErrorMessage = "DefaultCost must be a positive number.")]
+            [Required(ErrorMessage = "{0} is required.")]
+            [Range(0, double.MaxValue, ErrorMessage = "{0} must be a positive number.")]
             public decimal? DefaultCost { get; set; }
         }
 

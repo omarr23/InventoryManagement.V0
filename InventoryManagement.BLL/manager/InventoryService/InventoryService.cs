@@ -8,6 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using InventoryManagement.BLL.DTO.InventoryDTO;
 using InventoryManagement.BLL.Mappers;
+using InventoryManagement.BLL.Helper;
+using InventoryManagement.BLL.DTO.InventoryProductDTO;
+using InventoryManagement.BLL.Helper;
+using static InventoryManagement.BLL.DTO.InventoryDTO.InventoryDTO;
 
 namespace InventoryManagement.BLL.manager.InventoryService
 {
@@ -21,74 +25,116 @@ namespace InventoryManagement.BLL.manager.InventoryService
         }
 
         // Get all Inventories with Inventory Products
-        public async Task<IEnumerable<InventoryDTO.InventoryReadDTO>> GetAllAsync()
+        public async Task<ResultT<IEnumerable<InventoryDTO.InventoryReadDTO>>> GetAllAsync()
         {
-            var inventories = await _repository.GetAllAsync();
-            return inventories.Select(inventory =>
-                InventoryMapper.MapToInventoryReadDto(inventory)); // Map entities to DTOs with InventoryProducts
+            try
+            {
+                var inventories = await _repository.GetAllAsync();
+                var result = inventories.Select(InventoryMapper.MapToInventoryReadDto);
+                return ResultT<IEnumerable<InventoryReadDTO>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<IEnumerable<InventoryReadDTO>>.Failure(ErrorMassege.Failure("Inventory.GetAll", $"Error retrieving inventories: {ex.Message}"));
+            }
         }
 
         // Get Inventory by ID with Inventory Products
-        public async Task<InventoryDTO.InventoryReadDTO?> GetByIdAsync(int id)
+        public async Task<ResultT<InventoryDTO.InventoryReadDTO?>> GetByIdAsync(int id)
         {
             var inventory = await _repository.GetByIdAsync(id);
             if (inventory == null)
-                return null;
+                return ResultT<InventoryReadDTO?>.Failure(ErrorMassege.NotFound("Inventory.NotFound", $"Inventory with ID {id} not found."));
 
-            return InventoryMapper.MapToInventoryReadDto(inventory); // Map entity to DTO with InventoryProducts
+            var dto = InventoryMapper.MapToInventoryReadDto(inventory);
+            return ResultT<InventoryReadDTO?>.Success(dto); // Map entity to DTO with InventoryProducts
         }
 
         // Add a new Inventory with Inventory Products
-        public async Task AddAsync(InventoryDTO.CreateInventoryDTO dto)
+        public async Task<ResultT<InventoryDTO.InventoryReadDTO>> AddAsync(InventoryDTO.CreateInventoryDTO dto, string userId)
         {
-            var inventory = InventoryMapper.MapToInventory(dto); // Map DTO to Inventory entity
-            var inventoryProducts = dto.InventoryProducts.Select(ip => new InventoryProduct
+            try
             {
-                ProductId = ip.ProductId,
-                Quantity = ip.Quantity
-            }).ToList();
+                var inventory = InventoryMapper.MapToInventory(dto, userId);
 
-            inventory.InventoryProducts = inventoryProducts; // Link Inventory with InventoryProducts
+                await _repository.AddAsync(inventory);
+                await _repository.SaveChangesAsync();
 
-            await _repository.AddAsync(inventory);
-            await _repository.SaveChangesAsync(); // Save the new inventory along with inventory products to DB
+                var inventoryProducts = dto.InventoryProducts.Select(ip =>
+                    InventoryProductMapper.MapToInventoryProduct(ip, inventory.InventoryId)).ToList();
+
+                inventory.InventoryProducts = inventoryProducts;
+                await _repository.SaveChangesAsync();
+
+                var reloaded = await _repository.GetByIdAsync(inventory.InventoryId);
+                if (reloaded == null)
+                    return ResultT<InventoryReadDTO>.Failure(
+                                           ErrorMassege.Failure("Inventory.ReloadFailed", "Failed to reload inventory after creation.")
+                                       );
+                var resultDto = InventoryMapper.MapToInventoryReadDto(reloaded);
+                return ResultT<InventoryReadDTO>.Success(resultDto);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<InventoryReadDTO>.Failure(
+                                    ErrorMassege.Failure("Inventory.Create", $"Error creating inventory: {ex.Message}")
+                                );
+            }
         }
 
-        // Update an existing Inventory with Inventory Products
-        public async Task UpdateAsync(int id, InventoryDTO.UpdateInventoryDTO dto)
+            // Update an existing Inventory with Inventory Products
+            public async Task<ResultT<bool>> UpdateAsync(int id, InventoryDTO.UpdateInventoryDTO dto)
         {
             var inventory = await _repository.GetByIdAsync(id);
             if (inventory == null)
-                throw new KeyNotFoundException($"Inventory with ID {id} not found.");
-
-            InventoryMapper.MapToExistingInventory(dto, inventory); // Map DTO to existing Inventory entity
-
-            // Clear existing InventoryProducts and link the new ones
-            inventory.InventoryProducts.Clear();
-            var inventoryProducts = dto.InventoryProducts.Select(ip => new InventoryProduct
+                return ResultT<bool>.Failure(
+                                    ErrorMassege.NotFound("Inventory.NotFound", $"Inventory with ID {id} not found.")
+                                );
+            try
             {
-                ProductId = ip.ProductId,
-                Quantity = ip.Quantity
-            }).ToList();
-            // Add new InventoryProducts
-            foreach (var ip in inventoryProducts)
-            {
-                inventory.InventoryProducts.Add(ip);
+                InventoryMapper.MapToExistingInventory(dto, inventory);
+                inventory.InventoryProducts.Clear();
+
+                var inventoryProducts = dto.InventoryProducts.Select(ip => new InventoryProduct
+                {
+                    ProductId = ip.ProductId,
+                    Quantity = ip.Quantity
+                }).ToList();
+
+                foreach (var ip in inventoryProducts)
+                    inventory.InventoryProducts.Add(ip);
+
+                await _repository.SaveChangesAsync();
+                return ResultT<bool>.Success(true);
             }
-            
-
-            await _repository.SaveChangesAsync(); // Save the changes to DB
+            catch (Exception ex)
+            {
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Inventory.Update", $"Error updating inventory: {ex.Message}")
+                );
+            }
         }
 
         // Delete an Inventory with its Inventory Products
-        public async Task DeleteAsync(int id)
+        public async Task<ResultT<bool>> DeleteAsync(int id)
         {
             var inventory = await _repository.GetByIdAsync(id);
             if (inventory == null)
-                throw new KeyNotFoundException($"Inventory with ID {id} not found.");
-
-            _repository.Delete(inventory); // Delete Inventory and its InventoryProducts
-            await _repository.SaveChangesAsync(); // Save changes to DB
+                return ResultT<bool>.Failure(
+                                   ErrorMassege.NotFound("Inventory.NotFound", $"Inventory with ID {id} not found.")
+                               );
+            try
+            {
+                _repository.Delete(inventory);
+                await _repository.SaveChangesAsync();
+                return ResultT<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Inventory.Delete", $"Error deleting inventory: {ex.Message}")
+                );
+            }
         }
     }
 }

@@ -5,20 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InventoryManagement.BLL.Helper;
 
 namespace InventoryManagement.BLL.manager.InventoryProductService
 {
     public interface IInventoryProductService
     {
         // Get all InventoryProducts
-        Task<IEnumerable<InventoryProductReadDTO>> GetAllAsync();
+        Task<ResultT<IEnumerable<InventoryProductReadDTO>>> GetAllAsync();
 
-        Task<InventoryProductReadDTO?> GetByIdAsync(int inventoryId, int productId);
+        Task<ResultT<InventoryProductReadDTO?>> GetByIdAsync(int inventoryId, int productId);
 
-        Task AddAsync(CreateInventoryProductDTO dto);
+        Task<ResultT<bool>> AddAsync(CreateInventoryProductDTO dto, int inventoryId);
 
-        Task UpdateAsync(int inventoryId, int productId, UpdateInventoryProductDTO dto);
+        Task<ResultT<bool>> UpdateAsync(int inventoryId, int productId, UpdateInventoryProductDTO dto);
 
-        Task DeleteAsync(int inventoryId, int productId);
+        Task<ResultT<bool>> DeleteAsync(int inventoryId, int productId);
     }
 }

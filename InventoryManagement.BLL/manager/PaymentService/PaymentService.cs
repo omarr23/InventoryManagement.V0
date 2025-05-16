@@ -1,4 +1,5 @@
 ﻿using InventoryManagement.BLL.DTO.PaymentDTO;
+using InventoryManagement.BLL.Helper;
 using InventoryManagement.BLL.manager.PaymentService;
 using InventoryManagement.BLL.Mappers;
 using InventoryManagement.DAL.Models;
@@ -6,6 +7,8 @@ using InventoryManagement.DAL.Repository.PaymentRepository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using InventoryManagement.BLL.Helper;
+using static InventoryManagement.BLL.DTO.PaymentDTO.PaymentDTO;
 
 namespace InventoryManagement.BLL.manager.PaymentService
 {
@@ -18,47 +21,109 @@ namespace InventoryManagement.BLL.manager.PaymentService
             _repository = repository;
         }
 
-        public async Task<IEnumerable<PaymentDTO.PaymentReadDto>> GetAllPaymentsAsync()
+        public async Task<ResultT<IEnumerable<PaymentReadDto>>> GetAllPaymentsAsync()
         {
-            var payments = await _repository.GetAllAsync();
-            return payments.Select(PaymentMapper.MapToReadDto);
+            try
+            {
+                var payments = await _repository.GetAllAsync();
+                var result = payments.Select(PaymentMapper.MapToReadDto);
+                return ResultT<IEnumerable<PaymentReadDto>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<IEnumerable<PaymentReadDto>>.Failure(
+                    ErrorMassege.Failure("Payment.GetAll", $"Error retrieving payments: {ex.Message}")
+                );
+            }
         }
 
-        public async Task<PaymentDTO.PaymentReadDto?> GetPaymentByIdAsync(int id)
+        public async Task<ResultT<PaymentReadDto?>> GetPaymentByIdAsync(int id)
         {
-            var payment = await _repository.GetByIdAsync(id);
-            return payment == null ? null : PaymentMapper.MapToReadDto(payment);
+            try
+            {
+                var payment = await _repository.GetByIdAsync(id);
+                if (payment == null)
+                {
+                    return ResultT<PaymentReadDto?>.Failure(
+                        ErrorMassege.NotFound("Payment.NotFound", $"Payment with ID {id} not found.")
+                    );
+                }
+
+                return ResultT<PaymentReadDto?>.Success(PaymentMapper.MapToReadDto(payment));
+            }
+            catch (Exception ex)
+            {
+                return ResultT<PaymentReadDto?>.Failure(
+                    ErrorMassege.Failure("Payment.GetById", $"Error retrieving payment: {ex.Message}")
+                );
+            }
         }
 
-        public async Task<PaymentDTO.PaymentReadDto> CreatePaymentAsync(PaymentDTO.CreatePaymentDto dto)
+        public async Task<ResultT<PaymentReadDto>> CreatePaymentAsync(CreatePaymentDto dto)
         {
-            var payment = PaymentMapper.MapToEntity(dto);
-            await _repository.AddAsync(payment);
-            await _repository.SaveChangesAsync();
-            return PaymentMapper.MapToReadDto(payment);
+            try
+            {
+                var payment = PaymentMapper.MapToEntity(dto);
+                await _repository.AddAsync(payment);
+                await _repository.SaveChangesAsync();
+                return ResultT<PaymentReadDto>.Success(PaymentMapper.MapToReadDto(payment));
+            }
+            catch (Exception ex)
+            {
+                return ResultT<PaymentReadDto>.Failure(
+                    ErrorMassege.Failure("Payment.Create", $"Error creating payment: {ex.Message}")
+                );
+            }
         }
 
-        public async Task<bool> UpdatePaymentAsync(int id, PaymentDTO.UpdatePaymentDto dto)
+        public async Task<ResultT<bool>> UpdatePaymentAsync(int id, UpdatePaymentDto dto)
         {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null)
-                return false;
+            try
+            {
+                var existing = await _repository.GetByIdAsync(id);
+                if (existing == null)
+                {
+                    return ResultT<bool>.Failure(
+                        ErrorMassege.NotFound("Payment.NotFound", $"Payment with ID {id} not found.")
+                    );
+                }
 
-            PaymentMapper.MapToExistingEntity(existing, dto);
-            _repository.Update(existing);
-            await _repository.SaveChangesAsync();
-            return true;
+                PaymentMapper.MapToExistingEntity(existing, dto);
+                _repository.Update(existing);
+                await _repository.SaveChangesAsync();
+
+                return ResultT<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Payment.Update", $"Error updating payment: {ex.Message}")
+                );
+            }
         }
 
-        public async Task<bool> DeletePaymentAsync(int id)
+        public async Task<ResultT<bool>> DeletePaymentAsync(int id)
         {
-            var payment = await _repository.GetByIdAsync(id);
-            if (payment == null)
-                return false;
+            try
+            {
+                var payment = await _repository.GetByIdAsync(id);
+                if (payment == null)
+                {
+                    return ResultT<bool>.Failure(
+                        ErrorMassege.NotFound("Payment.NotFound", $"Payment with ID {id} not found.")
+                    );
+                }
 
-            _repository.Delete(payment);
-            await _repository.SaveChangesAsync();
-            return true;
+                _repository.Delete(payment);
+                await _repository.SaveChangesAsync();
+                return ResultT<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                return ResultT<bool>.Failure(
+                    ErrorMassege.Failure("Payment.Delete", $"Error deleting payment: {ex.Message}")
+                );
+            }
         }
     }
 }

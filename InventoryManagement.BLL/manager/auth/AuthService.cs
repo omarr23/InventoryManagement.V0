@@ -28,15 +28,24 @@ public class AuthService : IAuthService
 
     public async Task<IdentityResult> RegisterAsync(RegisterDto dto)
     {
-      var user = new ApplicationUser
-    {
-    UserName = dto.Username,
-    Email = dto.Email  
-    };
+        var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+        if (existingUser != null)
+        {
+            var error = IdentityResult.Failed(new IdentityError
+            {
+                Description = "Email is already in use."
+            });
+            return error;
+        }
+
+        var user = new ApplicationUser
+        {
+            UserName = dto.Username,
+            Email = dto.Email
+        };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
 
-        // Optional: assign default role if you have RoleManager configured
         if (result.Succeeded && !string.IsNullOrEmpty(dto.Role))
         {
             await _userManager.AddToRoleAsync(user, dto.Role);
@@ -45,7 +54,8 @@ public class AuthService : IAuthService
         return result;
     }
 
-   public async Task<string?> LoginAsync(LoginDto dto)
+
+    public async Task<string?> LoginAsync(LoginDto dto)
 {
     var user = await _userManager.FindByEmailAsync(dto.Email); // updated!
     if (user == null)

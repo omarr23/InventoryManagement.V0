@@ -20,12 +20,15 @@ namespace InventoryManagement.DAL.Repository.ProductRepository
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products
+                .Where(p => !p.IsDeleted)
+                .ToListAsync();
         }
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products
+                .FirstOrDefaultAsync(p => p.ProductId == id && !p.IsDeleted);
         }
 
         public async Task AddAsync(Product product)
@@ -37,10 +40,12 @@ namespace InventoryManagement.DAL.Repository.ProductRepository
         {
             _context.Products.Update(product);
         }
-
+// save change get it state -> deleted   , base enetiy 
         public void Delete(Product product)
         {
-            _context.Products.Remove(product);
+            product.IsDeleted = true;
+            product.DeletedAt = DateTime.UtcNow;
+            
         }
 
         public async Task SaveChangesAsync()
@@ -50,7 +55,7 @@ namespace InventoryManagement.DAL.Repository.ProductRepository
 
         public async Task<(IEnumerable<Product> Products, int TotalCount)> GetPaginatedAsync(int pageNumber, int pageSize)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products.Where(p => !p.IsDeleted);
             var totalCount = await query.CountAsync();
             
             var products = await query
@@ -59,6 +64,14 @@ namespace InventoryManagement.DAL.Repository.ProductRepository
                 .ToListAsync();
 
             return (products, totalCount);
+        }
+
+        public async Task<IEnumerable<Product>> GetSoftDeletedAsync()
+        {
+            return await _context.Products
+                .Where(p => p.IsDeleted)
+                .OrderByDescending(p => p.DeletedAt)
+                .ToListAsync();
         }
     }
 }

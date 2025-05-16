@@ -30,6 +30,9 @@ using InventoryManagement.DAL.Repository.SupplierProductRepository;
 using InventoryManagement.BLL.manager.InventoryProductService;
 using InventoryManagement.DAL.Repository.InventoryProductRepository;
 using InventoryManagement.API.Middleware;
+using Microsoft.Extensions.Caching.Memory;
+using InventoryManagement.BLL.DTO.Common;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,25 +69,12 @@ builder.Services.AddAuthentication(options =>
         ),
         ClockSkew = TimeSpan.Zero
     };
-
     options.Events = new JwtBearerEvents
     {
-        OnAuthenticationFailed = context =>
-        {
-            return Task.CompletedTask;
-        },
-        OnTokenValidated = context =>
-        {
-            return Task.CompletedTask;
-        },
-        OnMessageReceived = context =>
-        {
-            return Task.CompletedTask;
-        },
-        OnChallenge = context =>
-        {
-            return Task.CompletedTask;
-        }
+        OnAuthenticationFailed = context => Task.CompletedTask,
+        OnTokenValidated = context => Task.CompletedTask,
+        OnMessageReceived = context => Task.CompletedTask,
+        OnChallenge = context => Task.CompletedTask
     };
 });
 
@@ -93,7 +83,6 @@ builder.Services.AddAuthorization();
 // =============================================
 //  3. App Services & Repositories
 // =============================================
-//Generic
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
 builder.Services.AddScoped<IUserService, UserService>();
@@ -101,27 +90,21 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
-//Product
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
-//Inventory
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
-//Supplier
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
-//payment
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
-//SupplierProduct
 builder.Services.AddScoped<ISupplierProductService, SupplierProductService>();
 builder.Services.AddScoped<ISupplierProductRepository, SupplierProductRepository>();
-// InventoryProduct Repository and Service
 builder.Services.AddScoped<IInventoryProductRepository, InventoryProductRepository>();
 builder.Services.AddScoped<IInventoryProductService, InventoryProductService>();
-
+builder.Services.AddMemoryCache();
 // =============================================
-//  4. MVC + Swagger + JWT Support
+//  4. MVC + Swagger + JWT Bearer Auto-Prepend
 // =============================================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -134,18 +117,17 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    //  JWT Bearer Authentication for Swagger
+    // Auto-prepend "Bearer" in Swagger UI
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer", // Important for auto-prepend
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' followed by your JWT token.\nExample: Bearer eyJhbGciOiJIUzI1NiIs..."
+        Description = "JWT Authorization header using the Bearer scheme. Just paste the token below."
     });
 
-    // Apply JWT Bearer globally
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -181,11 +163,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<UnauthorizedMessageMiddleware>();
+
 app.UseHttpsRedirection();
-
-app.UseAuthentication(); //Enable authentication middleware
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
 app.Run();

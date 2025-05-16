@@ -14,7 +14,6 @@ namespace InventoryManagement.API.Controllers
     {
         private readonly ISupplierProductService _supplierProductService;
 
-        // Constructor with dependency injection of ISupplierProductService
         public SupplierProductController(ISupplierProductService supplierProductService)
         {
             _supplierProductService = supplierProductService;
@@ -24,78 +23,59 @@ namespace InventoryManagement.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddSupplierProductAsync([FromBody] CreateSupplierProductDTO dto)
         {
-            try
-            {
-                await _supplierProductService.AddSupplierProductAsync(dto);
+            var result = await _supplierProductService.AddSupplierProductAsync(dto);
 
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Error);  // Handle already existing relation or other errors
+            }
 
-                return CreatedAtRoute(
-                    "GetSupplierProduct",
-                    new { supplierId = dto.SupplierId, productId = dto.ProductId },
-                    value: dto);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);  // Handle already existing relation
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return CreatedAtRoute(
+                "GetSupplierProduct",
+                new { supplierId = dto.SupplierId, productId = dto.ProductId },
+                value: dto);
         }
-
-
 
         // GET api/supplierproduct/{supplierId}/{productId}
         [HttpGet("{supplierId}/{productId}", Name = "GetSupplierProduct")]
         public async Task<IActionResult> GetSupplierProductByIdAsync(int supplierId, int productId)
         {
-            var supplierProduct = await _supplierProductService.GetSupplierProductByIdAsync(supplierId, productId);
-            if (supplierProduct == null)
+            var result = await _supplierProductService.GetSupplierProductByIdAsync(supplierId, productId);
+
+            if (result.IsSuccess)
             {
-                return NotFound($"SupplierProduct with SupplierId {supplierId} and ProductId {productId} not found.");
+                return Ok(result.Value);
             }
-            return Ok(supplierProduct);
+
+            return NotFound(result.Error);
         }
-
-
 
         // PUT api/supplierproduct
         [HttpPut]
         public async Task<IActionResult> UpdateSupplierProductAsync([FromBody] UpdateSupplierProductDTO dto)
         {
-            try
+            var result = await _supplierProductService.UpdateSupplierProductAsync(dto);
+
+            if (!result.IsSuccess)
             {
-                await _supplierProductService.UpdateSupplierProductAsync(dto);
-                return NoContent();  // Return no content if the update is successful
+                return NotFound(result.Error);  // Handle not found exception
             }
-            catch (InvalidOperationException ex)
-            {
-                return NotFound(ex.Message);  // Handle not found exception
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+
+            return NoContent();  // Return no content if the update is successful
         }
 
         // DELETE api/supplierproduct/{supplierId}/{productId}
         [HttpDelete("{supplierId}/{productId}")]
         public async Task<IActionResult> DeleteSupplierProductAsync(int supplierId, int productId)
         {
-            try
+            var result = await _supplierProductService.DeleteSupplierProductAsync(supplierId, productId);
+
+            if (!result.IsSuccess)
             {
-                await _supplierProductService.DeleteSupplierProductAsync(supplierId, productId);
-                return NoContent();  // Return no content if the delete is successful
+                return NotFound(result.Error);  // Handle not found exception
             }
-            catch (InvalidOperationException ex)
-            {
-                return NotFound(ex.Message);  // Handle not found exception
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+
+            return NoContent();  // Return no content if the delete is successful
         }
     }
 }

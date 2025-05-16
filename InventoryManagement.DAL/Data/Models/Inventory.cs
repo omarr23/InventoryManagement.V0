@@ -8,7 +8,7 @@ public class Inventory
     [Required]
     public string OwnerType { get; set; } = string.Empty; // 'USER' or 'COMPANY'
 
-    public int OwnerId { get; set; } // Foreign key (UserId or CompanyId)
+    public string OwnerId { get; set; } // Foreign key (UserId or CompanyId)
 
     [Required]
     public string Name { get; set; } = string.Empty;

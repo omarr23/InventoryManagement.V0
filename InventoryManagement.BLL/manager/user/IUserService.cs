@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using InventoryManagement.BLL.DTO;
+using InventoryManagement.BLL.Helper;
 
 namespace InventoryManagement.BLL.manager.user
 {
  public interface IUserService
 {
-    Task<IEnumerable<UserDto>> GetAllUsersAsync();
-    Task<UserDto?> GetUserByIdAsync(string id);
-    Task<UserDto?> CreateUserAsync(CreateUserDto createUserDto);
+    Task<ResultT<IEnumerable<UserDto>>> GetAllUsersAsync();
+    Task<ResultT<UserDto?>> GetUserByIdAsync(string id);
+    Task<ResultT<UserDto?>> CreateUserAsync(CreateUserDto createUserDto);
 
-    Task UpdateUserAsync(string id, UserDto userDto);
-    Task DeleteUserAsync(string id);
+    Task<ResultT<bool>> UpdateUserAsync(string id, UserDto userDto);
+    Task<ResultT<bool>> DeleteUserAsync(string id);
 }
 
 }

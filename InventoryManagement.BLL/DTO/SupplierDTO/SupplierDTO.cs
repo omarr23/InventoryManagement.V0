@@ -21,11 +21,11 @@ namespace InventoryManagement.BLL.DTO.SupplierDTO
         }
         public class SupplierCreateDTO
         {
-            [Required]
-            [StringLength(100)]
+            [Required(ErrorMessage = "{0} Is Required")]
+            [StringLength(100, ErrorMessage = "{0} must be less than {1} character")]
             public string Name { get; set; } = string.Empty;
 
-            [StringLength(200)]
+            [StringLength(200, ErrorMessage = "{0} must be less than {1} character")]
             public string Address { get; set; } = string.Empty;
 
             [Phone]
@@ -37,11 +37,11 @@ namespace InventoryManagement.BLL.DTO.SupplierDTO
 
         public class SupplierUpdateDTO
         {
-            [Required]
-            [StringLength(100)]
+            [Required(ErrorMessage = "{0} Is Required")]
+            [StringLength(100, ErrorMessage = "{0} must be less than {1} character")]
             public string Name { get; set; } = string.Empty;
 
-            [StringLength(200)]
+            [StringLength(200, ErrorMessage = "{0} must be less than {1} character")]
             public string Address { get; set; } = string.Empty;
 
             [Phone]
@@ -49,7 +49,7 @@ namespace InventoryManagement.BLL.DTO.SupplierDTO
 
             [EmailAddress]
             public string Email { get; set; } = string.Empty;
-            [Required]
+            [Required(ErrorMessage = "{0} Is Required")]
             public int SupplierId { get; set; }  // Add SupplierId for updates
         }
     }

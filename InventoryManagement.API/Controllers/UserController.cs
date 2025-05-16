@@ -8,56 +8,64 @@ namespace InventoryManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]// 🔐 Require authentication for all actions in this controller
+// [Authorize(Roles = "Admin,Manager")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    
+
     public UserController(IUserService userService)
     {
         _userService = userService;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var users = await _userService.GetAllUsersAsync();
-        return Ok(users);
+        var result = await _userService.GetAllUsersAsync();
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
     }
-    
+
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)  
+    public async Task<IActionResult> GetById(string id)
     {
-        var user = await _userService.GetUserByIdAsync(id);
-        if (user == null)
-            return NotFound();
-        return Ok(user);
+        var result = await _userService.GetUserByIdAsync(id);
+        if (!result.IsSuccess)
+            return NotFound(result.Error);
+
+        return Ok(result.Value);
     }
-    
-   [HttpPost]
-public async Task<IActionResult> Create(CreateUserDto createUserDto)
-{
-    var createdUser = await _userService.CreateUserAsync(createUserDto);
 
-    if (createdUser == null)
-        return BadRequest("User creation failed.");
-
-    return CreatedAtAction(nameof(GetById), new { id = createdUser.UserId }, createdUser);
-}
-
-
-    
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, UserDto userDto)  // Changed to string
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateUserDto createUserDto)
     {
-        await _userService.UpdateUserAsync(id, userDto);
+        var result = await _userService.CreateUserAsync(createUserDto);
+
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return CreatedAtAction(nameof(GetById), new { id = result.Value.UserId }, result.Value);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(string id, UserDto userDto)
+    {
+        var result = await _userService.UpdateUserAsync(id, userDto);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
         return NoContent();
     }
-    
+
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)  // Changed to string
+    public async Task<IActionResult> Delete(string id)
     {
-        await _userService.DeleteUserAsync(id);
+        var result = await _userService.DeleteUserAsync(id);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
         return NoContent();
     }
 }

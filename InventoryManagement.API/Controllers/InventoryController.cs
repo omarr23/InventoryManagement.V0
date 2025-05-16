@@ -1,4 +1,5 @@
-﻿using InventoryManagement.BLL.manager.InventoryService;
+﻿using InventoryManagement.BLL.Helper;
+using InventoryManagement.BLL.manager.InventoryService;
 using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ namespace InventoryManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+//   [Authorize(Roles = "Admin, User, Manager")] 
     [Authorize]
     public class InventoryController : ControllerBase
     {
@@ -23,7 +25,10 @@ namespace InventoryManagement.API.Controllers
         public async Task<ActionResult<IEnumerable<InventoryReadDTO>>> GetAll()
         {
             var inventories = await _inventoryService.GetAllAsync();
-            return Ok(inventories); // Return all inventories with products
+            if (!inventories.IsSuccess)
+                return BadRequest(inventories.Error);
+
+            return Ok(inventories.Value); // Return all inventories with products
         }
 
         // GET: api/Inventory/{id}
@@ -31,10 +36,10 @@ namespace InventoryManagement.API.Controllers
         public async Task<ActionResult<InventoryReadDTO>> GetById(int id)
         {
             var inventory = await _inventoryService.GetByIdAsync(id);
-            if (inventory == null)
-                return NotFound($"Inventory with ID {id} not found.");
+            if (!inventory.IsSuccess)
+                return NotFound(inventory.Error);
 
-            return Ok(inventory); // Return the inventory with products by ID
+            return Ok(inventory.Value); // Return the inventory with products by ID
         }
 
         // POST: api/Inventory
@@ -44,8 +49,16 @@ namespace InventoryManagement.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _inventoryService.AddAsync(createInventoryDTO);
-            return CreatedAtAction(nameof(GetById), new { id = createInventoryDTO.OwnerId }, createInventoryDTO);
+            // Get the current user's ID
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not authenticated");
+
+            var createdInventory = await _inventoryService.AddAsync(createInventoryDTO, userId);
+            if (!createdInventory.IsSuccess)
+                return BadRequest(createdInventory.Error);
+
+            return CreatedAtAction(nameof(GetById), new { id = createdInventory.Value.InventoryId }, createdInventory.Value);
         }
 
         // PUT: api/Inventory/{id}
@@ -55,14 +68,10 @@ namespace InventoryManagement.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                await _inventoryService.UpdateAsync(id, updateInventoryDTO);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Inventory with ID {id} not found.");
-            }
+            var result = await _inventoryService.UpdateAsync(id, updateInventoryDTO);
+
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
 
             return NoContent(); // Return 204 No Content after successful update
         }
@@ -71,14 +80,10 @@ namespace InventoryManagement.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            try
-            {
-                await _inventoryService.DeleteAsync(id);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Inventory with ID {id} not found.");
-            }
+            var result = await _inventoryService.DeleteAsync(id);
+
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
 
             return NoContent(); // Return 204 No Content after successful deletion
         }

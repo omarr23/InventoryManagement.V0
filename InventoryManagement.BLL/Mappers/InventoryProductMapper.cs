@@ -11,13 +11,13 @@ namespace InventoryManagement.BLL.Mappers
     public static class InventoryProductMapper
     {
         // Map CreateInventoryProductDTO to InventoryProduct entity
-        public static InventoryProduct MapToInventoryProduct(CreateInventoryProductDTO createDto)
+        public static InventoryProduct MapToInventoryProduct(CreateInventoryProductDTO createDto, int inventoryId)
         {
             if (createDto == null) throw new ArgumentNullException(nameof(createDto));
 
             return new InventoryProduct
             {
-                InventoryId = createDto.InventoryId,
+                InventoryId = inventoryId,
                 ProductId = createDto.ProductId,
                 Quantity = createDto.Quantity,
                 CreatedAt = DateTime.Now, // Set the creation date

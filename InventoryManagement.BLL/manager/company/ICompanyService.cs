@@ -1,5 +1,6 @@
 
 using  InventoryManagement.BLL.DTO.companyDTO;
+using InventoryManagement.BLL.Helper;
 
 namespace InventoryManagement.BLL.manager.company
 {

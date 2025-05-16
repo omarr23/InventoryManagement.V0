@@ -35,12 +35,12 @@ namespace InventoryManagement.BLL.Mappers
         }
 
         // Map from CreateInventoryDTO to Inventory
-        public static Inventory MapToInventory(CreateInventoryDTO createInventoryDto)
+        public static Inventory MapToInventory(CreateInventoryDTO createInventoryDto, string userId)
         {
             return new Inventory
             {
                 OwnerType = createInventoryDto.OwnerType,
-                OwnerId = createInventoryDto.OwnerId,
+                OwnerId = userId, // Directly assign userId as it is a string
                 Name = createInventoryDto.Name,
                 IsPublic = createInventoryDto.IsPublic,
                 InventoryProducts = createInventoryDto.InventoryProducts.Select(ip => new InventoryProduct

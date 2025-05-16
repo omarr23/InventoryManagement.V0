@@ -16,5 +16,6 @@ namespace InventoryManagement.DAL.Repository.ProductRepository
         void Delete(Product product);
         Task SaveChangesAsync();
         Task<(IEnumerable<Product> Products, int TotalCount)> GetPaginatedAsync(int pageNumber, int pageSize);
+        Task<IEnumerable<Product>> GetSoftDeletedAsync();
     }
 }

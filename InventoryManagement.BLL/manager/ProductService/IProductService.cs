@@ -5,18 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using InventoryManagement.BLL.DTO.ProductDTO;
 using InventoryManagement.DAL.Models;
+using InventoryManagement.BLL.Helper;
 
 
 namespace InventoryManagement.BLL.manager.ProductService
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDTO.ProductReadDTO>> GetAllAsync();
-        Task<ProductDTO.ProductReadDTO?> GetByIdAsync(int id);
-        Task AddAsync(ProductDTO.ProductCreatDTO dto);
-        Task UpdateAsync(int id, ProductDTO.ProductUpdateDTO dto);
-        Task DeleteAsync(int id);
-        Task<PaginatedResult<ProductDTO.ProductReadDTO>> GetPaginatedAsync(PaginationParameters parameters);
+        Task<ResultT<IEnumerable<ProductDTO.ProductReadDTO>>> GetAllAsync();
+        Task<ResultT<ProductDTO.ProductReadDTO?>> GetByIdAsync(int id);
+        Task<ResultT<ProductDTO.ProductReadDTO>> AddAsync(ProductDTO.ProductCreatDTO dto);
+
+        Task<ResultT<bool>> UpdateAsync(int id, ProductDTO.ProductUpdateDTO dto);
+        Task<ResultT<bool>> DeleteAsync(int id);
+        Task<ResultT<PaginatedResult<ProductDTO.ProductReadDTO>>> GetPaginatedAsync(PaginationParameters parameters);
+        Task<ResultT<IEnumerable<ProductDTO.ProductReadDTO>>> GetSoftDeletedAsync();
     }
 }
 

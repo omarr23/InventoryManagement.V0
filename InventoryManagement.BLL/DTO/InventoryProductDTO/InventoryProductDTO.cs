@@ -19,26 +19,23 @@ namespace InventoryManagement.BLL.DTO.InventoryProductDTO
 
     public class CreateInventoryProductDTO
     {
-        [Required(ErrorMessage = "InventoryId is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "InventoryId must be a positive number.")]
-        public int InventoryId { get; set; }
-        [Required(ErrorMessage = "ProductId is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
+        [Required(ErrorMessage = "{0} is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
         public int ProductId { get; set; }
 
-        [Required(ErrorMessage = "Quantity is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be a positive number.")]
+        [Required(ErrorMessage = "{0} is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
         public int Quantity { get; set; }
     }
 
     public class UpdateInventoryProductDTO
     {
-        [Required(ErrorMessage = "ProductId is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a positive number.")]
+        [Required(ErrorMessage = "{0} is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
         public int ProductId { get; set; }
 
-        [Required(ErrorMessage = "Quantity is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be a positive number.")]
+        [Required(ErrorMessage = "{0} is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "{0} must be a positive number.")]
         public int Quantity { get; set; }
     }
 }

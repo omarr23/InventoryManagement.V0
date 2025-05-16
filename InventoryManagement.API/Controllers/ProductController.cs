@@ -1,15 +1,14 @@
 ﻿using InventoryManagement.BLL.DTO.ProductDTO;
 using InventoryManagement.BLL.manager.ProductService;
-using InventoryManagement.BLL.manager.services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using static InventoryManagement.BLL.DTO.ProductDTO.ProductDTO;
 
 namespace InventoryManagement.API.Controllers
 {
-    // ProductController.cs
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Uncomment if you want to require authentication for this controller
+    [Authorize] // Uncomment if you want to require authentication for this controller
     public class ProductController : ControllerBase
     {
         private readonly IProductService _service;
@@ -19,65 +18,98 @@ namespace InventoryManagement.API.Controllers
             _service = service;
         }
 
+        // Get paginated list of products
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationParameters parameters)
         {
-            var paginatedResult = await _service.GetPaginatedAsync(parameters);
-            return Ok(paginatedResult);
+            var result = await _service.GetPaginatedAsync(parameters);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
         }
 
+        // Get all products without pagination
         [HttpGet("all")]
         public async Task<IActionResult> GetAllWithoutPagination()
         {
-            var products = await _service.GetAllAsync();
-            return Ok(products);
+            var result = await _service.GetAllAsync();
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
         }
 
+        // Get soft-deleted products
+        [HttpGet("inactive")]
+        public async Task<IActionResult> GetSoftDeleted()
+        {
+            var result = await _service.GetSoftDeletedAsync();
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
+        }
+
+        // Get a product by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var product = await _service.GetByIdAsync(id);
-            if (product == null)
-                return NotFound();
+            var result = await _service.GetByIdAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
 
-            return Ok(product);
+            return Ok(result.Value);
         }
 
+        // Add a new product
         [HttpPost]
-        public async Task<IActionResult> Add(ProductDTO.ProductCreatDTO dto)
+        public async Task<IActionResult> Add([FromBody] ProductCreatDTO dto)
         {
-            await _service.AddAsync(dto);
-            return Ok(); // Or use CreatedAtAction if returning resource
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _service.AddAsync(dto);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
+
+            return CreatedAtAction(nameof(GetById), new { id = result.Value.ProductId }, result.Value);
         }
 
+        // Update an existing product
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, ProductDTO.ProductUpdateDTO dto)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateDTO dto)
         {
             try
             {
-                await _service.UpdateAsync(id, dto);
+                var result = await _service.UpdateAsync(id, dto);
+                if (!result.IsSuccess)
+                    return NotFound(result.Error);
+
                 return NoContent();
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound();
+                return NotFound($"Product with ID {id} not found: {ex.Message}");
             }
         }
 
+        // Delete a product
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await _service.DeleteAsync(id);
+                var result = await _service.DeleteAsync(id);
+                if (!result.IsSuccess)
+                    return NotFound(result.Error);
+
                 return NoContent();
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound();
+                return NotFound($"Product with ID {id} not found: {ex.Message}");
             }
         }
-
-
     }
 }

@@ -36,23 +36,20 @@ namespace InventoryManagement.BLL.DTO.ProductDTO
         //create product
         public class ProductCreatDTO
         {
-            [Required]
-            [StringLength(100, MinimumLength = 3)]
+            [Required (ErrorMessage = "{0} Is Required")]
+            [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} must be between {2} and {1} characters.")]
             public string Name { get; set; } = string.Empty;
-            [Required]
-            [StringLength(50)]
+            [Required (ErrorMessage = "{0} Is Required")]
+            [StringLength(50, ErrorMessage = "{0} must be less than {1} character")]
             public string Sku { get; set; } = string.Empty;
 
-            [StringLength(500)]
+            [StringLength(500, ErrorMessage = "{0} must be less than {1} character")]
             public string Description { get; set; } = string.Empty;
-            [Required]
-            [Range(1, 1000000.00)]
+            [Required(ErrorMessage = "{0} Is Required")]
+            [Range(1, 1000000.00, ErrorMessage = "{0} must be between {1} and {2}.")]
             public decimal Price { get; set; }
-
-
-
-
         }
+
         //read product
         public class ProductReadDTO
         {
@@ -63,24 +60,24 @@ namespace InventoryManagement.BLL.DTO.ProductDTO
             public decimal Price { get; set; }
             public DateTime CreatedAt { get; set; }
             public DateTime UpdatedAt { get; set; }
+            public bool IsDeleted { get; set; }
+            public DateTime? DeletedAt { get; set; }
         }
+
         //update product 
         public class ProductUpdateDTO
         {
-            [Required]
-            [StringLength(100, MinimumLength = 3)]
+            [Required(ErrorMessage = "{0} Is Required")]
+            [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} must be between {2} and {1} characters.")]
             public string Name { get; set; } = string.Empty;
-            [Required]
-            [StringLength(50)]
+            [Required(ErrorMessage = "{0} Is Required")]
+            [StringLength(50, ErrorMessage = "{0} must be less than {1} character")]
             public string Sku { get; set; } = string.Empty;
-            [StringLength(500)]
-
+            [StringLength(500, ErrorMessage = "{0} must be less than {1} character")]
             public string Description { get; set; } = string.Empty;
-            [Required]
-            [Range(1, 1000000.00)]
+            [Required(ErrorMessage = "{0} Is Required")]
+            [Range(1, 1000000.00, ErrorMessage = "{0} must be between {1} and {2}.")]
             public decimal Price { get; set; }
-
         }
-
     }
 }
