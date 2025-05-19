@@ -30,7 +30,7 @@ interface AuthResponse {
 export const authService = {
   async login(email: string, password: string) {
     try {
-      const response = await axios.post<AuthResponse>(`${API_URL}/auth/login`, { email, password });
+      const response = await axios.post<AuthResponse>(`${API_URL}/Auth/login`, { email, password });
       return response.data;
     } catch (error) {
       console.error('Login error:', error);
@@ -44,7 +44,7 @@ export const authService = {
 
   async register(data: RegisterData): Promise<void> {
     try {
-      console.log('Sending registration request to:', `${API_URL}/auth/register`);
+      console.log('Sending registration request to:', `${API_URL}/Auth/register`);
       console.log('Registration data:', {
         email: data.email,
         username: data.username,
@@ -52,7 +52,7 @@ export const authService = {
         role: "USER"
       });
 
-      const response = await axios.post(`${API_URL}/auth/register`, {
+      const response = await axios.post(`${API_URL}/Auth/register`, {
         email: data.email,
         username: data.username,
         password: data.password,
@@ -105,4 +105,4 @@ axios.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   }
-); 
+);

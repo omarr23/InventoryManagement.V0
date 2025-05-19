@@ -33,8 +33,21 @@ using InventoryManagement.API.Middleware;
 using Microsoft.Extensions.Caching.Memory;
 using InventoryManagement.BLL.DTO.Common;
 
-
 var builder = WebApplication.CreateBuilder(args);
+
+// =============================================
+//  0. CORS Configuration
+// =============================================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:8081") // frontend dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 // =============================================
 //  1. Database & Identity Configuration
@@ -103,6 +116,7 @@ builder.Services.AddScoped<ISupplierProductRepository, SupplierProductRepository
 builder.Services.AddScoped<IInventoryProductRepository, InventoryProductRepository>();
 builder.Services.AddScoped<IInventoryProductService, InventoryProductService>();
 builder.Services.AddMemoryCache();
+
 // =============================================
 //  4. MVC + Swagger + JWT Bearer Auto-Prepend
 // =============================================
@@ -122,7 +136,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer", // Important for auto-prepend
+        Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme. Just paste the token below."
@@ -167,9 +181,17 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<UnauthorizedMessageMiddleware>();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// ✅ CORS must be before auth
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
