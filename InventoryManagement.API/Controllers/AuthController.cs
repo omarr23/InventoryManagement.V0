@@ -26,7 +26,7 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "User registered successfully." });
     }
-
+   
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
