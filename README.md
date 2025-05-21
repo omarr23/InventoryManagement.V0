@@ -28,19 +28,14 @@ An ASP.NET Core Web API project for managing users, products, inventory, supplie
 
 ---
 
-## 📂 Project Structure
-
-```
-
 InventoryManagement.V0/
-├── InventoryManagement.API/        # Web API controllers
-├── InventoryManagement.BLL/        # Business logic layer
-├── InventoryManagement.DAL/        # Data access layer
-├── Models/                         # DTOs and Entity Models
-├── Services/                       # Custom services like Auth
-└── README.md
+├── 📂 InventoryManagement.API/       → API Controllers and Startup Configuration
+├── 📂 InventoryManagement.BLL/       → Business Logic Layer (Services, Interfaces)
+├── 📂 InventoryManagement.DAL/       → Data Access Layer (Repositories, EF Core)
+├── 📂 Models/                        → Entity Models and Data Transfer Objects (DTOs)
+├── 📂 Services/                      → Custom Services (e.g., Authentication, JWT)
+└── 📄 README.md                      → Project Documentation
 
-````
 
 ---
 
