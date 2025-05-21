@@ -1,6 +1,4 @@
-To make the README more **clear, professional, and complete**, we can improve the formatting, integrate the React frontend setup more cleanly, and create a distinction between **backend** (ASP.NET Core API) and **frontend** (React app with Vite). Here's an improved version with that in mind:
 
----
 
 ```markdown
 # 📦 Inventory Management API & Frontend
@@ -208,12 +206,4 @@ Open an issue first to discuss major changes or feature proposals.
 
 ---
 
-### ✅ Summary of Improvements
 
-- Clearly separated **backend** and **frontend** setup
-- Improved readability and structure with consistent section formatting
-- Grouped related items (e.g., project structure, schemas, endpoints)
-- Added links, tips, and usage hints
-
-Let me know if you'd like this broken up into separate files (`README.md`, `frontend/README.md`, etc.) or need it converted to HTML or GitHub Pages format.
-```
