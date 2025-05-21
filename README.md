@@ -1,6 +1,4 @@
-Here is the corrected and fully cleaned-up version of your `README.md` with proper Markdown syntax:
 
-````markdown
 # 📦 Inventory Management API & Frontend
 
 A full-stack inventory management solution with:
@@ -205,5 +203,4 @@ Open an issue first to discuss major changes or feature proposals.
 
 ```
 
-This version should render correctly across all Markdown viewers including GitHub. Let me know if you want this exported or converted to a different format (like HTML or PDF).
 ```
