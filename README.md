@@ -1,6 +1,6 @@
+Here is the corrected and fully cleaned-up version of your `README.md` with proper Markdown syntax:
 
-
-```markdown
+````markdown
 # 📦 Inventory Management API & Frontend
 
 A full-stack inventory management solution with:
@@ -34,8 +34,7 @@ A full-stack inventory management solution with:
 
 ## 📁 Project Structure
 
-```
-
+```plaintext
 InventoryManagement.V0/
 ├── InventoryManagement.API/        # ASP.NET Core API (Controllers, Startup)
 ├── InventoryManagement.BLL/        # Business Logic Layer
@@ -44,16 +43,15 @@ InventoryManagement.V0/
 ├── Services/                       # JWT Auth, Custom Services
 ├── frontend/                       # React (Vite + Tailwind + shadcn-ui)
 └── README.md                       # Project Documentation
-
 ````
 
 ---
 
 ## 🔐 Authentication
 
-- JWT-based authentication
-- Roles assigned during user registration
-- Unauthorized access returns friendly error message
+* JWT-based authentication
+* Roles assigned during user registration
+* Unauthorized access returns friendly error message
 
 > `"You are not logged in to use this endpoint"`
 
@@ -61,12 +59,15 @@ InventoryManagement.V0/
 
 ## 🛠️ Backend Setup (ASP.NET Core)
 
-1. Clone the repository  
-2. Update the database connection in `appsettings.json`  
+1. Clone the repository
+
+2. Update the database connection in `appsettings.json`
+
 3. Run database migrations:
+
    ```bash
    dotnet ef database update
-````
+   ```
 
 4. Start the backend server:
 
@@ -204,6 +205,5 @@ Open an issue first to discuss major changes or feature proposals.
 
 ```
 
----
-
-
+This version should render correctly across all Markdown viewers including GitHub. Let me know if you want this exported or converted to a different format (like HTML or PDF).
+```
