@@ -1,62 +1,120 @@
+To make the README more **clear, professional, and complete**, we can improve the formatting, integrate the React frontend setup more cleanly, and create a distinction between **backend** (ASP.NET Core API) and **frontend** (React app with Vite). Here's an improved version with that in mind:
 
 ---
 
 ```markdown
-# 📦 Inventory Management API
+# 📦 Inventory Management API & Frontend
 
-An ASP.NET Core Web API project for managing users, products, inventory, suppliers, and payments in an organization. Built with role-based authorization using ASP.NET Identity.
+A full-stack inventory management solution with:
+
+- ⚙️ **ASP.NET Core Web API** for backend operations (users, products, inventory, suppliers, payments)
+- ⚛️ **React (Vite + TypeScript)** frontend with TailwindCSS and shadcn-ui
+- 🔐 Role-based access control using ASP.NET Identity and JWT
 
 ---
 
 ## 🚀 Features
 
-- User registration, login, and authentication with JWT
-- Role-based authorization: Admin, Manager, and User
-- Inventory and product tracking
+- User registration, login, and JWT authentication
+- Role-based authorization (Admin, Manager, User)
+- Product and inventory tracking
 - Supplier and payment management
-- Clean architecture with separate layers (API, BLL, DAL)
+- Clean architecture (API, BLL, DAL)
+- Modern frontend with instant preview and hot reloading
 
 ---
 
-## 👥 Roles & Permissions
+## 🧑‍💼 Roles & Permissions
 
-| Role    | Description                                 |
+| Role    | Permissions                                |
 |---------|---------------------------------------------|
 | Admin   | Full access to all features                 |
-| Manager | Can manage inventory and users              |
-| User    | Can view/update inventory only              |
+| Manager | Manage inventory and users                  |
+| User    | View/update inventory only                  |
 
 ---
+
+## 📁 Project Structure
+
+```
 
 InventoryManagement.V0/
-├── 📂 InventoryManagement.API/       → API Controllers and Startup Configuration
-├── 📂 InventoryManagement.BLL/       → Business Logic Layer (Services, Interfaces)
-├── 📂 InventoryManagement.DAL/       → Data Access Layer (Repositories, EF Core)
-├── 📂 Models/                        → Entity Models and Data Transfer Objects (DTOs)
-├── 📂 Services/                      → Custom Services (e.g., Authentication, JWT)
-└── 📄 README.md                      → Project Documentation
+├── InventoryManagement.API/        # ASP.NET Core API (Controllers, Startup)
+├── InventoryManagement.BLL/        # Business Logic Layer
+├── InventoryManagement.DAL/        # Data Access Layer (EF Core Repos)
+├── Models/                         # Entity Models & DTOs
+├── Services/                       # JWT Auth, Custom Services
+├── frontend/                       # React (Vite + Tailwind + shadcn-ui)
+└── README.md                       # Project Documentation
 
+````
 
 ---
 
-## 🔒 Authentication
+## 🔐 Authentication
 
 - JWT-based authentication
-- Roles are assigned during user creation
-- Middleware handles unauthorized access with a friendly message: `"You are not logged in to use this endpoint"`
+- Roles assigned during user registration
+- Unauthorized access returns friendly error message
+
+> `"You are not logged in to use this endpoint"`
 
 ---
 
-## 📌 API Schemas
+## 🛠️ Backend Setup (ASP.NET Core)
+
+1. Clone the repository  
+2. Update the database connection in `appsettings.json`  
+3. Run database migrations:
+   ```bash
+   dotnet ef database update
+````
+
+4. Start the backend server:
+
+   ```bash
+   dotnet run
+   ```
+
+---
+
+## 💻 Frontend Setup (React + Vite)
+
+Make sure you have Node.js and npm installed. Use [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) if needed.
+
+1. Navigate to the `frontend/` directory:
+
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+> 💡 The frontend will auto-reload and preview changes instantly.
+
+---
+
+## 📌 Sample API Schemas
 
 ### 🏢 Company
+
 ```json
 {
   "companyName": "string",
   "address": "string",
   "contactInfo": "string"
 }
-````
+```
 
 ### 👤 User
 
@@ -125,30 +183,13 @@ InventoryManagement.V0/
 
 ---
 
-## 🛠️ Setup Instructions
-
-1. Clone the repository
-2. Set up your database connection in `appsettings.json`
-3. Run database migrations:
-
-   ```bash
-   dotnet ef database update
-   ```
-4. Build and run the project:
-
-   ```bash
-   dotnet run
-   ```
-
----
-
-## 📬 API Endpoints
+## 📬 Key API Endpoints
 
 * `POST /api/auth/register`
 * `POST /api/auth/login`
 * `GET /api/inventory`
 * `POST /api/products`
-* ...more documented via Swagger
+* *(more documented in Swagger UI)*
 
 ---
 
@@ -158,9 +199,21 @@ MIT License — free to use and modify.
 
 ---
 
-## 🙋‍♂️ Contributions
+## 🙋‍♀️ Contributions
 
-Pull requests are welcome. Please open an issue first to discuss changes.
+Pull requests are welcome!
+Open an issue first to discuss major changes or feature proposals.
 
 ```
 
+---
+
+### ✅ Summary of Improvements
+
+- Clearly separated **backend** and **frontend** setup
+- Improved readability and structure with consistent section formatting
+- Grouped related items (e.g., project structure, schemas, endpoints)
+- Added links, tips, and usage hints
+
+Let me know if you'd like this broken up into separate files (`README.md`, `frontend/README.md`, etc.) or need it converted to HTML or GitHub Pages format.
+```
